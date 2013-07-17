@@ -1,0 +1,10 @@
+ 1. First start first Droid@Screen - type 99/1 or going in folder 
+    /tools/Apps and start first droidatscreen.jar
+	
+ 2. Second the next step would be to set the ADB Path for Droid@Screen!
+    This is to be found under Settings adb "ADB Executable Path" after 
+    the start of the tools.
+	
+ 3. Third Finally only must the folder for images stored in the
+    Droid@Screen tool to configure.
+	

@@ -1,1 +1,1 @@
-apktool-1.5.1-unofficial.jar
+apktool-1.5.3.jar 

@@ -13,7 +13,7 @@
         <GUIConfig name="UserDefineDlg" position="undocked">hide</GUIConfig>
         <GUIConfig name="TabSetting" size="4" replaceBySpace="no" />
         <!--App position-->
-        <GUIConfig name="AppPosition" x="385" y="492" width="1229" height="1024" isMaximized="no" />
+        <GUIConfig name="AppPosition" x="98" y="32" width="751" height="908" isMaximized="no" />
         <!-- For the primary scintilla view,
              2 status for Attribut lineNumberMargin, bookMarkMargin, indentGuideLine and currentLineHilitingShow: "show" or "hide"
              4 status for Attribut folderMarkStyle : "simple", "arrow", "circle" and "box"  -->
@@ -72,7 +72,7 @@
         <GUIConfig name="MaitainIndent">yes</GUIConfig>
         <GUIConfig name="MRU">yes</GUIConfig>
         <GUIConfig name="URL">0</GUIConfig>
-        <GUIConfig name="globalOverride" fg="no" bg="no" font="no" fontSize="no" bold="no" italic="no" underline="no" />
+        <GUIConfig name="globalOverride" fg="yes" bg="yes" font="yes" fontSize="yes" bold="no" italic="no" underline="no" />
         <GUIConfig name="auto-completion" autoCAction="0" triggerFromNbChar="1" funcParams="no" />
         <GUIConfig name="sessionExt"></GUIConfig>
         <GUIConfig name="SmartHighLight">yes</GUIConfig>
@@ -82,7 +82,9 @@
         <GUIConfig name="ScintillaGlobalSettings" enableMultiSelection="no" />
         <GUIConfig name="openSaveDir" value="0" defaultDirPath="" />
         <GUIConfig name="titleBar" short="no" />
-        <GUIConfig name="stylerTheme" path="C:\Program Files (x86)\Notepad++\themes\Waher-style.xml" />
+        <GUIConfig name="stylerTheme" path="E:\Android\[AIO-2.0.0.3.14]\tools\Apps\Notepad++\themes\Deep Black.xml" />
+        <GUIConfig name="SmartHighLightCaseSensitive">no</GUIConfig>
+        <GUIConfig name="delimiterSelection" leftmostDelimiter="40" rightmostDelimiter="41" delimiterSelectionOnEntireDocument="0" />
         <GUIConfig name="DockingManager" leftWidth="200" rightWidth="152" topHeight="200" bottomHeight="733">
             <PluginDlg pluginName="ComparePlugin.dll" id="9" curr="1" prev="-1" isVisible="no" />
             <PluginDlg pluginName="dummy" id="0" curr="3" prev="-1" isVisible="no" />
@@ -116,10 +118,6 @@
         <Replace name="/1050/" />
     </FindHistory>
     <History nbMaxFile="15" inSubMenu="no" customLength="-1">
-        <File filename="C:\apk\tools\Settings\exclude.txt" />
-        <File filename="C:\apk\tools\Settings\updates.txt" />
-        <File filename="F:\git\kuban-updater\src\com\kuban\settings\BackupActivity.java" />
-        <File filename="F:\git\kuban-updater\src\com\kuban\settings\RomInfoActivity.java" />
         <File filename="F:\git\kuban-updater\src\com\kuban\settings\SingleModActivity.java" />
         <File filename="F:\git\kuban-updater\src\com\kuban\settings\utils\Utils.java" />
         <File filename="F:\git\kuban-updater\src\com\kuban\settings\utils\ImageLoader.java" />
@@ -131,6 +129,10 @@
         <File filename="C:\apk\tools\log.log" />
         <File filename="C:\apk\Script.bat" />
         <File filename="C:\apk\projects-smali\SystemUI.apk\com\android\systemui\BeanBag.smali" />
+        <File filename="E:\Android\[AIO-2.0.0.3.11]\projects\Contacts.apk\res\layout\call_detail.xml" />
+        <File filename="E:\Android\[AIO-2.0.0.3.11]\tools\logs\log.log" />
+        <File filename="E:\Android\[AIO-2.0.0.3.13]\projects\Mms.apk\res\drawable\listitem_background.xml" />
+        <File filename="E:\Android\[AIO-2.0.0.3.13]\tools\logs\log.log" />
     </History>
     <ProjectPanels>
         <ProjectPanel id="0" workSpaceFile="" />

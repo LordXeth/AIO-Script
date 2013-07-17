@@ -42,16 +42,19 @@ if not exist %~dp0backup\ mkdir %~dp0backup
 if not exist %~dp0done\ mkdir %~dp0done
 if not exist %~dp0done\optimized\ mkdir %~dp0done\optimized
 if not exist %~dp0done\flashable\ mkdir %~dp0done\flashable
+if not exist %~dp0droid-screen\ mkdir %~dp0droid-screen
 if not exist %~dp0originals\ mkdir %~dp0originals
 if not exist %~dp0phone-info\ mkdir %~dp0phone-info
 if not exist %~dp0place-here-for-modding\ mkdir %~dp0place-here-for-modding
+if not exist %~dp0place-scale-images\ mkdir %~dp0place-scale-images
+if not exist %~dp0place-scale-images\res\ mkdir %~dp0place-scale-images\res
 if not exist %~dp0projects\ mkdir %~dp0projects
 if not exist %~dp0projects-smali\ mkdir %~dp0projects-smali
 if not exist %~dp0pulled\ mkdir %~dp0pulled
 if not exist %~dp0dot9\ mkdir %~dp0dot9
 cls
 echo.
-echo                           AIO Android Tool V2.0.0.3
+echo                          AIO Android Tool V2.0.0.3.1
 echo.
 echo.
 echo                    ........                       ........                     
@@ -102,11 +105,11 @@ echo.
 echo.
 echo                           Brought to you by RUJELUS22
 echo                                 and TeaM VeNuM
-echo.
+echo                                  and LordXeth
 echo.
 PAUSE
 cls
-mode con:cols=80 lines=44
+mode con:cols=80 lines=55
 if not exist %~dp0tools\Settings\firstrun.txt goto firstopen
 :afterfirstrun
 set firstrun=off
@@ -189,10 +192,14 @@ echo  Current Project: %capp%
 echo  Adb: %adbwifi% ^| Remount Available: %remountavlible% ^| Sounds: %sound2% 
 echo  Apktool:%apktool% ^| Compression Level: %usrc% ^| Mem: %heapy%mb
 echo  ------------------------------------------------------------------------------
+echo.
+echo.
+echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
 echo  RUJELUS22s Android AIO Tool
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 																				::ADB WIFI CONNECT MENU
 if %adbwifi%==Connected goto adbwificonnected
 if %adbwifi%==Disconnected goto adbwifidisconnected
@@ -363,15 +370,14 @@ goto flashmenudone
 set flash=on
 echo  10   Flash something to the phone
 :flashmenudone
-																				::SELECT MENU
-echo  ------------------------------------------------------------------------------
-echo  11   Select your project              100    Refresh Choices
-echo.
 																				::ODEX MENU
+echo.
+echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
 echo  Odex Menu
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 if %adbwifi%==Disconnected goto odexmenunophone
 if %remountavlible%==No goto odexmenunoremount
 if %adbwifi%==Connected goto allowodex
@@ -392,7 +398,7 @@ echo  -    No Phone Plugged in
 echo  -    No Phone Plugged in
 echo  -    No Phone Plugged in
 %~dp0tools\Apps\chgcolor %bg%
-echo 24    Odex Information
+echo  24   Odex Information
 echo.
 goto odexmenudone
 :odexmenunoremount
@@ -403,18 +409,20 @@ echo  -    Your kernel does not support this feature [adb remount]
 echo  -    Your kernel does not support this feature [adb remount]
 echo  -    Your kernel does not support this feature [adb remount]
 %~dp0tools\Apps\chgcolor %bg%
-echo 24    Odex Information
+echo  24   Odex Information
 echo.
 :odexmenudone
 																				::SPECIAL ITEMS MENU
+echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
 echo  Special Items
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
-echo  91   Open Color Edit
+echo.
+echo  90   Open Color Edit
 if not exist %~dp0dot9\*.9.png goto skipcompile9
 set compile9=on
-echo  92   Compile all .9's in %~dp0dot9
+echo  91   Compile all .9's in %~dp0dot9
 goto skipcompile9done
 :skipcompile9
 set compile9=off
@@ -422,8 +430,8 @@ set compile9=off
 echo  -    no .9 Images in %~dp0dot9
 %~dp0tools\Apps\chgcolor %bg%
 :skipcompile9done
-echo  93   Open MD5 Checker
-echo  94   Phone and Emulator Menu
+echo  92   Open MD5 Checker
+echo  93   Phone and Emulator Menu
 																				::SEARCH ITEMS
 if not exist %~dp0projects\*.apk goto noapksearch
 if exist %~dp0projects\*.apk goto allowsearch
@@ -447,15 +455,21 @@ goto searchmenudone
 if %capp% EQU All goto noallsearch
 ::DO NOT REMOVE
 set search=on
-echo  95   Search inside of %cappmenu%
+echo  94   Search inside of %cappmenu%
 :searchmenudone
 																			::SPECIAL ITEMS BOTTOM
-echo  96   Open Notepad++ [With smali highlighting]
-echo  97   Open a Color Wheel
-echo  98   Color Change [for smali]
+echo  95   Open Notepad++ [With smali highlighting]
+echo  96   Open a Color Wheel
+echo  97   Color Change [for smali]
+echo.
+echo  98   Other Tools
 echo  99   Options and Misc
 echo.
-echo  **   Exit the App
+																				::SELECT MENU
+echo  ------------------------------------------------------------------------------
+echo  #########  11   Select Project ################  100   Refresh Tool  #########
+echo  ------------------------------------------------------------------------------
+echo  ###############################  **   Exit App  ##############################
 echo  ------------------------------------------------------------------------------
 SET /P menu1=Please make your decision:
 																			::END MENU CHOICES
@@ -532,24 +546,25 @@ if %menu1%==23 goto reodexchoose
 :disableodex
 if %menu1%==24 goto odexinformation
 
-if %menu1%==91 goto coloredit
+if %menu1%==90 goto coloredit
 if %compile9%==off goto disablecompile9
-if %menu1%==92 goto xultimate
+if %menu1%==91 goto xultimate
 :disablecompile9
-if %menu1%==93 goto md5checker
+if %menu1%==92 goto md5checker
 ::DO NOT REMOVE
-if %menu1%==94 goto phone
+if %menu1%==93 goto phone
 
 if %search%==on goto enablesearch
 if %search%==off goto disablesearch
 :enablesearch
-if %menu1%==95 goto search
+if %menu1%==94 goto search
 :disablesearch
 
-if %menu1%==96 goto notepad
-if %menu1%==97 goto colorpick
+if %menu1%==95 goto notepad
+if %menu1%==96 goto colorpick
 ::DO NOT REMOVE
-if %menu1%==98 goto colorchange
+if %menu1%==97 goto colorchange
+if %menu1%==98 goto othertools
 if %menu1%==99 goto options
 if %menu1%==100 goto restart
 ::DO NOT REMOVE
@@ -669,6 +684,7 @@ echo  What is the IP of your phone
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 echo  99   Go Back
+echo.
 echo  ------------------------------------------------------------------------------
 set input=error
 set /P input=Type input: %=%
@@ -734,10 +750,14 @@ echo  --------------------------------------------------------------------------
 echo  Pull Menu
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  1    Pull One File
 echo  2    Pull More than one File
 echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
 echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 set /P input=Type input: %=%
 if %input% EQU 1 goto pullone
@@ -757,12 +777,16 @@ echo  --------------------------------------------------------------------------
 echo  What would you like to pull
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  1    Pull /system/app/
 echo  2    Pull /system/framework/
 echo  3    Pull /data/app/
 echo  4    Pull The Whole system
 echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
 echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 set /P input=Type input: %=%
 if %input% EQU 2 goto pullframe
@@ -1047,6 +1071,7 @@ echo  What would you like to push
 echo  ------------------------------------------------------------------------------
 if not exist %~dp0done\signed%capp% if not exist %~dp0done\unsigned%capp% if not exist %~dp0done\%capp% goto nopushproject
 set pushpro=yes
+echo.
 echo  1    Push your project to the phone
 goto pushprojectdone
 :nopushproject
@@ -1065,7 +1090,10 @@ echo  -    No Flashable %capp% to push
 :cwmpushdone
 echo  3    Push something else to the phone
 echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
 echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 set /P menu5=Type input: %=%
 if %pushpro%==no goto nopushpro
@@ -1378,11 +1406,15 @@ echo  --------------------------------------------------------------------------
 echo  What would you like to decompile
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  1    All jars
 echo  2    All apks
 echo  3    Everything in place-here-for-modding
 echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
 echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 set /P input=Type input: %=%
 if %input% EQU 2 goto decompileallapk
@@ -1553,7 +1585,7 @@ if %jar% EQU 1 goto compilejar
 :compileapk
 if not exist %~dp0projects\%capp% goto dirnada
 echo.
-echo Building %capp%
+echo  Building %capp%
 if exist %~dp0done\unsigned%capp% del /q %~dp0done\unsigned%capp% > NUL
 if exist %~dp0done\signed%capp% del /q %~dp0done\signed%capp% > NUL
 java -Xmx%heapy%m -jar %~dp0tools\build\%apktool% b %~dp0projects\%capp% %~dp0done\unsigned%capp%
@@ -1567,23 +1599,23 @@ start /min %~dp0tools\beep.bat
 cls
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
-echo In the apk folder you'll find a keep folder. Delete everything you have
-echo modified and leave files that you haven't. If you have modified any xml's,
-echo then delete the resources.arsc from that folder as well.
+echo  In the apk folder you'll find a keep folder. Delete everything you have
+echo  modified and leave files that you haven't. If you have modified any xml's,
+echo  then delete the resources.arsc from that folder as well.
 echo.
-echo Once done then press enter on this script.
+echo  Once done then press enter on this script.
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 ::DO NOT REMOVE
 PAUSE
 echo.
 set odexfile=!capp:~0,-4!.odex
-echo Making new apk
+echo  Making new apk
 %~dp0tools\Apps\7za.exe a -tzip %~dp0done/unsigned%capp% %~dp0keep/* -mx%usrc% -r > NUL
 if exist %~dp0keep rd /s /q %~dp0keep > NUL
 if not exist %~dp0projects-smali\%capp% goto restart
 echo.
-echo Compiling %capp%'s smali
+echo  Compiling %capp%'s smali
 if exist %~dp0tools\temp\compile\%capp% rd /s /q %~dp0tools\temp\compile\%capp% > NUL
 mkdir %~dp0tools\temp\compile\%capp% > NUL
 cd %~dp0tools\temp\
@@ -1643,7 +1675,7 @@ goto restart
 :compilejar
 echo.
 set odexfile=!capp:~0,-4!.odex
-echo Compiling %capp%
+echo  Compiling %capp%
 if exist %~dp0tools\temp\compile rd /s /q %~dp0tools\temp\compile > NUL
 mkdir %~dp0tools\temp\compile > NUL
 cd %~dp0tools\temp\compile > NUL
@@ -1717,11 +1749,13 @@ echo.
 echo  -------------------------------- LG Devices ---------------------------------
 %~dp0tools\Apps\chgcolor %bg%
 echo.
-echo 10    Nexus 4
+echo  10   Nexus 4
 echo.
 echo.
-echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
 echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
 set /P input=Type input: %=%
@@ -1809,10 +1843,14 @@ echo  --------------------------------------------------------------------------
 echo  Where should your project go?
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  1    Flash to /system/framework/
 echo  2    Flash to /system/app/
 echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
 echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
 set /P location=Type input: %=%
@@ -1830,14 +1868,18 @@ goto makeanothercwm
 :allowcwm
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
-echo Would you like to make a zip of %capp%
-echo or something else?
+echo  Would you like to make a zip of %capp%
+echo  or something else?
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  1    %capp%
 echo  2    Something Else
 echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
 echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
 set /P input=Type input: %=%
@@ -1851,8 +1893,8 @@ echo.
 :currentname
 set input=error
 %~dp0tools\Apps\chgcolor %high%
-echo The current project name is %capp%
-echo Would you like to rename the file [y/n]?
+echo  The current project name is %capp%
+echo  Would you like to rename the file [y/n]?
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 echo  ------------------------------------------------------------------------------
@@ -1869,11 +1911,11 @@ echo.
 echo  ------------------------------------------------------------------------------
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo What would you like to make a zip of?
+echo  What would you like to make a zip of?
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 echo  ------------------------------------------------------------------------------
-echo Type or drag your file here
+echo  Type or drag your file here
 echo.
 set /P input=Type input: %=%
 set inputodex=!input:~0,-4!.odex
@@ -1939,7 +1981,7 @@ echo.
 echo  ------------------------------------------------------------------------------
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo What would you like to name it?
+echo  What would you like to name it?
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 echo  ------------------------------------------------------------------------------
@@ -1959,10 +2001,14 @@ if exist %~dp0done\%odexfile% (
 	echo  ------------------------------------------------------------------------------
 	echo.
 	echo  Would you like to the zip the odexed or deodexed version of your project?
+	echo.
 	echo  1    Odex
 	echo  2    Deodexed
 	echo.
+	echo  ------------------------------------------------------------------------------
+	%~dp0tools\Apps\chgcolor %high%
 	echo  99   Go Back
+	%~dp0tools\Apps\chgcolor %bg%
 	echo  ------------------------------------------------------------------------------
 	set /P bothfound=Please make your decision:
 )
@@ -2005,7 +2051,7 @@ set input=error
 set /p remountavlible=<%~dp0tools\temp\remount.txt
 if %remountavlible% EQU No goto endzip
 if %adbwifi%==Connected (
-	echo Would you like to flash the zip now? [y/n]
+	echo  Would you like to flash the zip now? [y/n]
 	set zipname=%newname%-CWM.zip
 	%~dp0tools\Apps\chgcolor %bg%
 	set /P input=Type input: %=%	
@@ -2030,10 +2076,14 @@ if exist %~dp0done\%odexfile% (
 	echo  ------------------------------------------------------------------------------
 	echo.
 	echo  Would you like to the zip the odexed or deodexed version of your project?
+	echo.
 	echo  1    Odex
 	echo  2    Deodexed
 	echo.
+	echo  ------------------------------------------------------------------------------
+	%~dp0tools\Apps\chgcolor %high%
 	echo  99   Go Back
+	%~dp0tools\Apps\chgcolor %bg%
 	echo  ------------------------------------------------------------------------------
 	set /P bothfound=Please make your decision:
 )
@@ -2078,7 +2128,7 @@ echo.
 set /P remountavlible=<%~dp0tools\temp\remount.txt
 if %remountavlible% EQU No goto endzip
 if %adbwifi%==Connected (
-	echo Would you like to flash the zip now? [y/n]
+	echo  Would you like to flash the zip now? [y/n]
 	set zipname=%capp%-CWM.zip
 	%~dp0tools\Apps\chgcolor %bg%
 	set /P input=Type input: %=%	
@@ -2146,7 +2196,7 @@ for /F "tokens=* skip=1 delims=" %%a in (%~dp0tools\temp\adb.txt) do (
 if /I !count! LSS 2 goto single
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo There are multiple devices plugged in. Which do you want to install to?
+echo  There are multiple devices plugged in. Which do you want to install to?
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 %~dp0tools\adb.exe devices>%~dp0tools\temp\adb.txt
@@ -2166,11 +2216,11 @@ if %input%==99 goto restart
 %~dp0tools\Apps\chgcolor %high%
 set device=!a%input%!
 set devicefinal=%device:~0,-7%
-echo Installing %capp% to %devicefinal%
-echo This can take a minute on an emulator.
+echo  Installing %capp% to %devicefinal%
+echo  This can take a minute on an emulator.
 %~dp0tools\Apps\chgcolor %bg%
 echo.
-echo Waiting for device
+echo  Waiting for device
 %~dp0tools\adb.exe wait-for-device > NUL
 %~dp0tools\adb.exe -s %devicefinal% install -r %~dp0done\signed%capp%
 echo.
@@ -2180,11 +2230,11 @@ goto restart
 :single
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Installing %capp% to the phone
-echo This can take a minute on an emulator.
+echo  Installing %capp% to the phone
+echo  This can take a minute on an emulator.
 %~dp0tools\Apps\chgcolor %bg%
 echo.
-echo Waiting for device
+echo  Waiting for device
 %~dp0tools\adb.exe wait-for-device > NUL
 %~dp0tools\adb.exe install -r %~dp0done\signed%capp%
 echo.
@@ -2201,13 +2251,17 @@ echo  --------------------------------------------------------------------------
 echo.
 echo  1    advpng
 echo  2    optipng
-echo  3    pngcrush
-echo  4    pngout
+echo  3    pngcrush x86
+echo  4    pngcrush x64
+echo  5    pngout
 echo.
-echo 99    Go Back
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
+echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 set input=error
-echo Starting Optimization >%~dp0tools\logs\pngoptimizelog.log
+echo  Starting Optimization >%~dp0tools\logs\pngoptimizelog.log
 if not exist %~dp0projects\%capp% goto dirnada
 if not exist %~dp0tools\temp\optimize\drawable mkdir %~dp0tools\temp\optimize\drawable
 if not exist %~dp0tools\temp\optimize\drawable-ldpi mkdir %~dp0tools\temp\optimize\drawable-ldpi
@@ -2224,24 +2278,26 @@ if exist %~dp0projects\%capp%\res\drawable-xxhdpi\*.9.png xcopy /s /y %~dp0proje
 set /P input=Please make your decision:
 if %input%==1 goto advpng
 if %input%==2 goto optipng
-if %input%==3 goto pngcrush
-if %input%==4 goto pngout
+if %input%==3 goto pngcrush86
+if %input%==4 goto pngcrush64
+if %input%==5 goto pngout
 if %input%==99 goto restart
 goto what
 :advpng
 echo.
+echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
-echo Optimizing %capp%'s Pngs with advpng
+echo  Optimizing %capp%'s Pngs with advpng
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
-echo This can take awhile please wait...
+echo  This can take awhile please wait...
 echo.
-echo The PNG optimization log can be found here:
+echo  The PNG optimization log can be found here:
 echo.
 echo  ------------------------------------------------------------------------------
 ::DO NOT REMOVE
-echo Please Wait...
+echo  Please Wait...
 cd %~dp0projects\%capp%\res\
 for /r %%f in (*.png) do (
 	%~dp0tools\Apps\advpng -z4 %%f >>%~dp0tools\logs\pngoptimizelog.log
@@ -2254,13 +2310,13 @@ goto restart
 :optipng
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Optimizing %capp%'s Pngs with optipng
+echo  Optimizing %capp%'s Pngs with optipng
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
-echo This can take awhile please wait...
+echo  This can take awhile please wait...
 echo.
-echo The PNG optimization log can be found here:
+echo  The PNG optimization log can be found here:
 echo.
 echo  ------------------------------------------------------------------------------
 ::DO NOT REMOVE
@@ -2270,23 +2326,49 @@ xcopy /s /y %~dp0tools\temp\optimize %~dp0projects\%capp%\res > NUL
 rd /s /q %~dp0tools\temp\optimize
 if errorlevel 1 goto errorlog
 goto restart
-:pngcrush
+:pngcrush86
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Optimizing %capp%'s Pngs with pngcrush
+echo  Optimizing %capp%'s Pngs with pngcrush x86
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
-echo This can take awhile please wait...
+echo  This can take awhile please wait...
 echo.
-echo The PNG optimization log can be found here:
+echo  The PNG optimization log can be found here:
 echo.
 echo  ------------------------------------------------------------------------------
 ::DO NOT REMOVE
-echo Please Wait...
+echo  Please Wait...
 cd %~dp0projects\%capp%\res\
 for /r %%f in (*.png) do (
-	%~dp0tools\Apps\pngcrush -reduce -brute %%f tempfile.tmp>>%~dp0tools\logs\pngoptimizelog.log
+	%~dp0tools\Apps\pngcrush_x86 -reduce -brute %%f tempfile.tmp>>%~dp0tools\logs\pngoptimizelog.log
+	del /q %%f>>%~dp0tools\logs\pngoptimizelog.log
+	move /s /y tempfile.tmp %%f>>%~dp0tools\logs\pngoptimizelog.log
+	echo moving tempfile.tmp to %%f>>%~dp0tools\logs\pngoptimizelog.log
+)
+cd %~dp0
+xcopy /s /y %~dp0tools\temp\optimize %~dp0projects\%capp%\res > NUL
+rd /s /q %~dp0tools\temp\optimize
+if errorlevel 1 goto errorlog
+goto restart
+:pngcrush64
+echo.
+%~dp0tools\Apps\chgcolor %high%
+echo  Optimizing %capp%'s Pngs with pngcrush x64
+%~dp0tools\Apps\chgcolor %bg%
+echo  ------------------------------------------------------------------------------
+echo.
+echo  This can take awhile please wait...
+echo.
+echo  The PNG optimization log can be found here:
+echo.
+echo  ------------------------------------------------------------------------------
+::DO NOT REMOVE
+echo  Please Wait...
+cd %~dp0projects\%capp%\res\
+for /r %%f in (*.png) do (
+	%~dp0tools\Apps\pngcrush_x64 -reduce -brute %%f tempfile.tmp>>%~dp0tools\logs\pngoptimizelog.log
 	del /q %%f>>%~dp0tools\logs\pngoptimizelog.log
 	move /s /y tempfile.tmp %%f>>%~dp0tools\logs\pngoptimizelog.log
 	echo moving tempfile.tmp to %%f>>%~dp0tools\logs\pngoptimizelog.log
@@ -2299,17 +2381,17 @@ goto restart
 :pngout
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Optimizing %capp%'s Pngs with pngout
+echo  Optimizing %capp%'s Pngs with pngout
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
-echo This can take awhile please wait...
+echo  This can take awhile please wait...
 echo.
-echo The PNG optimization log can be found here:
+echo  The PNG optimization log can be found here:
 echo.
 echo  ------------------------------------------------------------------------------
 ::DO NOT REMOVE
-echo Please Wait...
+echo  Please Wait...
 cd %~dp0projects\%capp%\res\
 for /r %%f in (*.png) do (
 	%~dp0tools\Apps\pngout %%f>>%~dp0tools\logs\pngoptimizelog.log
@@ -2333,6 +2415,7 @@ echo  Sign With?
 echo  ------------------------------------------------------------------------------
 if not exist %~dp0tools\keys\*.keystore goto nosigs
 set nosigna=on
+echo.
 echo  1    Use a previously made keystore to sign?
 goto nosigsdone
 :nosigs
@@ -2344,7 +2427,10 @@ echo  -    No previously made keystore to use
 echo  2    Make your own key and use it to sign?
 echo  3    Sign %capp% with a generic test key
 echo.
-echo 99   Go Back
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
+echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 set /P input=Please make your decision:
 if %nosigna% EQU off goto nolocal
@@ -2389,7 +2475,7 @@ echo  %~dp0tools\keys\%signame%.keystore
 echo.
 echo  ------------------------------------------------------------------------------
 echo.
-echo Press any key to sign %capp% with your new keystore
+echo  Press any key to sign %capp% with your new keystore
 PAUSE > NUL
 :signodexcheck
 set odexfile=!capp:~0,-4!.odex
@@ -2406,7 +2492,8 @@ echo  %capp% odex and deodex available
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
-echo Would you like to the sign the odexed or deodexed version of your project?
+echo  Would you like to the sign the odexed or deodexed version of your project?
+echo.
 echo  1    Odex
 echo  2    Deodexed
 echo.
@@ -2428,7 +2515,7 @@ if %usegeneric% EQU yes (
 	cls
 	echo  ------------------------------------------------------------------------------
 	%~dp0tools\Apps\chgcolor %high%
-	echo Signing Odexed %capp%.
+	echo  Signing Odexed %capp%.
 	%~dp0tools\Apps\chgcolor %bg%
 	echo  ------------------------------------------------------------------------------
 	java -Xmx%heapy%m -jar %~dp0tools\build\signapk.jar -w %~dp0tools\build\certificate.pem %~dp0tools\build\key.pk8 %~dp0done\%capp% %~dp0done\signedOdexed%capp%
@@ -2457,7 +2544,7 @@ goto nextchoice
 	cls
 	echo  ------------------------------------------------------------------------------
 	%~dp0tools\Apps\chgcolor %high%
-	echo Signing Odexed %capp%.
+	echo  Signing Odexed %capp%.
 	%~dp0tools\Apps\chgcolor %bg%
 	echo  ------------------------------------------------------------------------------
 	set keytouse=!a%signname%!	
@@ -2477,7 +2564,7 @@ goto errorlog
 	cls
 	echo  ------------------------------------------------------------------------------
 	%~dp0tools\Apps\chgcolor %high%
-	echo Signing Odexed %capp%.
+	echo  Signing Odexed %capp%.
 	%~dp0tools\Apps\chgcolor %bg%
 	echo  ------------------------------------------------------------------------------
 	set signame=%~dp0tools\keys\%signame%.keystore
@@ -2503,7 +2590,7 @@ if %usegeneric% EQU yes (
 	cls
 	echo  ------------------------------------------------------------------------------
 	%~dp0tools\Apps\chgcolor %high%
-	echo Signing Deodexed %capp%.
+	echo  Signing Deodexed %capp%.
 	%~dp0tools\Apps\chgcolor %bg%
 	echo  ------------------------------------------------------------------------------
 	java -Xmx%heapy%m -jar %~dp0tools\build\signapk.jar -w %~dp0tools\build\certificate.pem %~dp0tools\build\key.pk8 %~dp0done\unsigned%capp% %~dp0done\signed%capp%
@@ -2532,7 +2619,7 @@ goto nextchoice
 	cls
 	echo  ------------------------------------------------------------------------------
 	%~dp0tools\Apps\chgcolor %high%
-	echo Signing Deodexed %capp%.
+	echo  Signing Deodexed %capp%.
 	%~dp0tools\Apps\chgcolor %bg%
 	echo  ------------------------------------------------------------------------------
 	set keytouse=!a%signname%!	
@@ -2552,7 +2639,7 @@ goto errorlog
 	cls
 	echo  ------------------------------------------------------------------------------
 	%~dp0tools\Apps\chgcolor %high%
-	echo Signing Deodexed %capp%.
+	echo  Signing Deodexed %capp%.
 	%~dp0tools\Apps\chgcolor %bg%
 	echo  ------------------------------------------------------------------------------
 	set signame=%~dp0tools\keys\%signame%.keystore
@@ -2637,6 +2724,7 @@ echo  --------------------------------------------------------------------------
 echo  Zipalign Menu
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 if not exist %~dp0done\unsigned%capp% goto nounsignedzip
 if exist %~dp0done\unsigned%capp% goto allowzipalign
 :nounsignedzip
@@ -2668,7 +2756,10 @@ set zipalignall=on
 echo  2    Zipalign everything in the done folder
 :allzipaligndone
 echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
 echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 set /P input=Please make your decision:
 if %zipalign%==on if %input%==1 goto zipalignone
@@ -2679,7 +2770,7 @@ goto what
 :zipalignone
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Zipaligning Apk
+echo  Zipaligning Apk
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 if exist %~dp0done\unsigned%capp% %~dp0tools\Apps\zipalign -f 4 %~dp0done\unsigned%capp% %~dp0done\unsignedaligned%capp%
@@ -2708,7 +2799,7 @@ goto restart
 if not exist %~dp0done\*.apk goto errorlog
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Zipaligning ALL Apks in the done folder
+echo  Zipaligning ALL Apks in the done folder
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 for %%g in (%~dp0done\signed*.apk) do (
@@ -2849,7 +2940,7 @@ for /F "tokens=* skip=1 delims=" %%a in (%~dp0tools\temp\adb.txt) do (
 if /I !count! LSS 2 goto pullinfo
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo There are multiple devices plugged in. Which do you want to pull from?
+echo  There are multiple devices plugged in. Which do you want to pull from?
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 %~dp0tools\adb.exe devices>%~dp0tools\temp\adb.txt
@@ -2867,10 +2958,10 @@ set device=!a%input%!
 set devicefinal=%device:~0,-7%
 :pullinfo
 del /q %~dp0phone-info\*.*
-echo Waiting for device
+echo  Waiting for device
 %~dp0tools\adb.exe wait-for-device > NUL
 %~dp0tools\adb.exe -s %devicefinal% remount > NUL
-echo Pull info from the phone and putting it in the phone-info dir
+echo  Pull info from the phone and putting it in the phone-info dir
 %~dp0tools\adb.exe -s %devicefinal% shell logcat -d > %~dp0phone-info\logcat.txt
 %~dp0tools\adb.exe -s %devicefinal% shell dmesg >  %~dp0phone-info\dmesg.txt
 %~dp0tools\adb.exe -s %devicefinal% shell getprop > %~dp0phone-info\prop.txt
@@ -2922,10 +3013,14 @@ echo  --------------------------------------------------------------------------
 echo  Where do you want to search?
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  1    Search smali
 echo  2    Search res
 echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
 echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
 set /P input=Type input: %=%
@@ -3015,8 +3110,51 @@ start /min %~dp0tools\beep.bat
 :skipbeep5
 %~dp0tools\Apps\chgcolor %err%
 echo.
-echo An Error Occured, Please Check The Log
+echo  An Error Occured, Please Check The Log
 %~dp0tools\Apps\chgcolor %bg%
+echo.
+PAUSE
+goto restart
+																				::OPTIONS OTHER TOOLS 
+:othertools
+cls
+set input=error
+echo  ------------------------------------------------------------------------------
+echo  Current Project: %capp%
+echo  Adb: %adbwifi% ^| Remount Available: %remountavlible% ^| Sounds: %sound2% 
+echo  Apktool:%apktool% ^| Compression Level: %usrc% ^| Mem: %heapy%mb
+echo  ------------------------------------------------------------------------------
+echo.
+echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
+echo  Options other Apps
+%~dp0tools\Apps\chgcolor %bg%
+echo  ------------------------------------------------------------------------------
+echo.
+echo  1    Open droidAtScreen
+echo  2    Open better9patch
+echo  3    Open ADB File Explorer
+echo  4    Open AXMLPrinterGUI
+echo  5    Open Android Image Scaler
+echo  6    Open Jd-GUI
+echo  7    Open HxD Hex Editor
+echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
+echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
+echo  ------------------------------------------------------------------------------
+echo.
+set /P input=Type input: %=%
+if %input% EQU 1 goto droidatscreen
+if %input% EQU 2 goto better9patch
+if %input% EQU 3 goto adbfileexplorer
+if %input% EQU 4 goto axmlprintergui
+if %input% EQU 5 goto androidimagescaler
+if %input% EQU 6 goto jdgui
+if %input% EQU 7 goto hxd
+if %input% EQU 99 goto restart
 echo.
 PAUSE
 goto restart
@@ -3029,10 +3167,14 @@ echo  Current Project: %capp%
 echo  Adb: %adbwifi% ^| Remount Available: %remountavlible% ^| Sounds: %sound2% 
 echo  Apktool:%apktool% ^| Compression Level: %usrc% ^| Mem: %heapy%mb
 echo  ------------------------------------------------------------------------------
+echo.
+echo.
+echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
 echo  Options and Misc Menu
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  1    Set the compression ratio
 echo  2    Set max memory
 echo  3    Set apktool version
@@ -3047,17 +3189,26 @@ if %sound% EQU 1 goto optionskip2
 echo  8    Enable sounds
 :optionskip2
 echo  9    Change the theme
-echo 10    Check and Install an update
+echo.
+echo  10   Check and Install an update by Rujelus22
+echo  11   Check and Install an update by LordXeth
+echo.
 if %noupdatecheck% EQU 1 goto optionskip5
-echo 11    Enable startup update check
+echo  12   Enable startup update check
 :optionskip5
 if %noupdatecheck% EQU 0 goto optionskip6
-echo 11    Disable startup update check
+echo  12   Disable startup update check
 :optionskip6
 echo.
-echo 99    Go Back
-echo  ------------------------------------------------------------------------------
 echo.
+echo  13   About / Full Changelog
+echo  14   About / Resources List
+echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
+echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
+echo  ------------------------------------------------------------------------------
 set /P input=Type input: %=%
 if %input% EQU 1 goto compression
 if %input% EQU 2 goto memory
@@ -3076,12 +3227,15 @@ if %input% EQU 8 goto enablebeep
 :optionskip4
 if %input% EQU 9 goto theme
 if %input% EQU 10 goto update
+if %input% EQU 11 goto update-lx
 if %noupdatecheck% EQU 0 goto optionskip7
-if %input% EQU 11 goto disableupdate
+if %input% EQU 12 goto disableupdate
 :optionskip7
 if %noupdatecheck% EQU 1 goto optionskip8
-if %input% EQU 11 goto enableupdate
+if %input% EQU 12 goto enableupdate
 :optionskip8
+if %input% EQU 13 goto aboutfullchangelog
+if %input% EQU 14 goto aboutresourceslist
 if %input% EQU 99 goto restart
 goto what
 																				::ENABLE DISABLE UPDATES
@@ -3103,7 +3257,7 @@ set noupdatecheck=1
 echo %noupdatecheck% > %~dp0tools\Settings\updates.txt
 if %firstrun% EQU on goto firstrunbeep
 goto restart
-																				::UPDATE AIO
+																				::UPDATE AIO-1
 :update
 if exist %~dp0tools\checkversion.txt del /q %~dp0tools\checkversion.txt > NUL
 cd %~dp0tools
@@ -3111,34 +3265,127 @@ cd %~dp0tools
 cd %~dp0
 set /p check=<%~dp0tools\checkversion.txt
 set /p current=<%~dp0tools\Settings\version.txt
-if /I !current! LSS !check! goto updatenow
+if /I !current! LSS !check! goto updatenow1
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo No updates at this time
+echo  No updates at this time
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 PAUSE
 goto restart
-																				::RUN UPDATE
-:updatenow
+																				::UPDATE AIO-2
+:update-lx
+if exist %~dp0tools\checkversion.txt del /q %~dp0tools\checkversion.txt > NUL
+cd %~dp0tools
+%~dp0tools\Apps\wget\wget -q http://www.daily-battlefield.net/downloads/AIO_Script/checkversion.txt > NUL
+cd %~dp0
+set /p check=<%~dp0tools\checkversion.txt
+set /p current=<%~dp0tools\Settings\version.txt
+if /I !current! LSS !check! goto updatenow2
+echo.
+%~dp0tools\Apps\chgcolor %high%
+echo  No updates at this time
+%~dp0tools\Apps\chgcolor %bg%
+echo.
+PAUSE
+goto restart
+																				::RUN UPDATE-1
+:updatenow1
 echo.
 set input=error
 %~dp0tools\Apps\chgcolor %high%
-echo New Update Found
+echo  New Update Found
 %~dp0tools\Apps\chgcolor %bg%
 echo.
-echo Would you like to install it?
+echo  Would you like to install it?
 set /P input=Type input: %=%
 if %input% EQU n goto restart
-if %input% EQU y goto exitandupdate
+if %input% EQU y goto exitandupdate1
 goto what
-:exitandupdate
-echo Exiting ADB
+:exitandupdate1
+echo  Exiting ADB
 tasklist /FI "IMAGENAME eq adb.exe" | find /I /N "adb.exe" > NUL
 if "%ERRORLEVEL%"=="0" taskkill /IM adb.exe /f > NUL
-echo Leaving the app. Goodbye
+echo  Leaving the app. Goodbye
 start cmd.exe /c %~dp0tools\update.cmd
 exit
+goto restart
+																				::RUN UPDATE-2
+:updatenow2
+echo.
+set input=error
+%~dp0tools\Apps\chgcolor %high%
+echo  New Update Found
+%~dp0tools\Apps\chgcolor %bg%
+echo.
+echo  Would you like to install it?
+set /P input=Type input: %=%
+if %input% EQU n goto restart
+if %input% EQU y goto exitandupdate2
+goto what
+:exitandupdate2
+echo  Exiting ADB
+tasklist /FI "IMAGENAME eq adb.exe" | find /I /N "adb.exe" > NUL
+if "%ERRORLEVEL%"=="0" taskkill /IM adb.exe /f > NUL
+echo  Leaving the app. Goodbye
+start cmd.exe /c %~dp0tools\update-lx.cmd
+exit
+goto restart
+																				::ABOUT FULL CHANGELOG
+:aboutfullchangelog
+cls
+mode con:cols=80 lines=56
+set input=error
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
+echo  About / Full Changelog
+%~dp0tools\Apps\chgcolor %bg%
+echo  ------------------------------------------------------------------------------
+echo.
+type %~dp0tools\Settings\changelog.txt
+echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
+echo  Setup Tools
+%~dp0tools\Apps\chgcolor %bg%
+echo  ------------------------------------------------------------------------------
+echo.
+type %~dp0tools\Settings\droidatscreen_path.txt
+echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
+echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
+echo  ------------------------------------------------------------------------------
+set /P input=Type input: %
+if %input% EQU 99 goto restart
+goto what
+																				::ABOUT RESOURCES LIST
+:aboutresourceslist
+cls
+mode con:cols=80 lines=55
+set input=error
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
+echo  About / Resources List
+%~dp0tools\Apps\chgcolor %bg%
+echo  ------------------------------------------------------------------------------
+echo.
+echo.
+echo.
+type %~dp0tools\Settings\changelog_resources.txt
+echo.
+echo.
+echo.
+echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
+echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
+echo  ------------------------------------------------------------------------------
+set /P input=Type input: %
+if %input% EQU 99 goto restart
+goto what
 																				::THEME MENU
 :theme
 cls
@@ -3149,6 +3396,7 @@ echo  What would you like the main font color to be?
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor 01
+echo.
 echo  1    Dark Blue
 %~dp0tools\Apps\chgcolor 02
 echo  2    Green
@@ -3167,23 +3415,24 @@ echo  8    Grey
 %~dp0tools\Apps\chgcolor 09
 echo  9    Light Blue
 %~dp0tools\Apps\chgcolor 0A
-echo 10    Light Green
+echo  10   Light Green
 %~dp0tools\Apps\chgcolor 0B
-echo 11    Light Aqua
+echo  11   Light Aqua
 %~dp0tools\Apps\chgcolor 0C
-echo 12    Light Red
+echo  12    Light Red
 %~dp0tools\Apps\chgcolor 0D
-echo 13    Light Purple
+echo  13   Light Purple
 %~dp0tools\Apps\chgcolor 0E
-echo 14    Light Yellow
+echo  14   Light Yellow
 %~dp0tools\Apps\chgcolor 0F
-echo 15    Bright White
+echo  15   Bright White
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 if %firstrun% EQU on goto firstrunskip
-echo 16    Reset to the default theme theme
+echo  16   Reset to the default theme theme
 echo.
-echo 99    Go Back
+echo  99   Go Back
+echo.
 :firstrunskip
 echo  ------------------------------------------------------------------------------
 echo.
@@ -3219,6 +3468,7 @@ echo  What do you want the highlight color to be?
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor 01
+echo.
 echo  1    Dark Blue
 %~dp0tools\Apps\chgcolor 02
 echo  2    Green
@@ -3237,21 +3487,22 @@ echo  8    Grey
 %~dp0tools\Apps\chgcolor 09
 echo  9    Light Blue
 %~dp0tools\Apps\chgcolor 0A
-echo 10    Light Green
+echo  10   Light Green
 %~dp0tools\Apps\chgcolor 0B
-echo 11    Light Aqua
+echo  11   Light Aqua
 %~dp0tools\Apps\chgcolor 0C
-echo 12    Light Red
+echo  12   Light Red
 %~dp0tools\Apps\chgcolor 0D
-echo 13    Light Purple
+echo  13   Light Purple
 %~dp0tools\Apps\chgcolor 0E
-echo 14    Light Yellow
+echo  14   Light Yellow
 %~dp0tools\Apps\chgcolor 0F
-echo 15    Bright White
+echo  15   Bright White
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 if %firstrun% EQU on goto firstrunskip
-echo 99    Go Back
+echo  99   Go Back
+echo.
 :firstrunskip
 echo  ------------------------------------------------------------------------------
 echo.
@@ -3287,6 +3538,7 @@ echo  What do you want the disabled menu color to be?
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor 01
+echo.
 echo  1    Dark Blue
 %~dp0tools\Apps\chgcolor 02
 echo  2    Green
@@ -3305,21 +3557,22 @@ echo  8    Grey
 %~dp0tools\Apps\chgcolor 09
 echo  9    Light Blue
 %~dp0tools\Apps\chgcolor 0A
-echo 10    Light Green
+echo  10   Light Green
 %~dp0tools\Apps\chgcolor 0B
-echo 11    Light Aqua
+echo  11   Light Aqua
 %~dp0tools\Apps\chgcolor 0C
-echo 12    Light Red
+echo  12   Light Red
 %~dp0tools\Apps\chgcolor 0D
-echo 13    Light Purple
+echo  13   Light Purple
 %~dp0tools\Apps\chgcolor 0E
-echo 14    Light Yellow
+echo  14   Light Yellow
 %~dp0tools\Apps\chgcolor 0F
-echo 15    Bright White
+echo  15   Bright White
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 if %firstrun% EQU on goto firstrunskip
-echo 99    Go Back
+echo  99   Go Back
+echo.
 :firstrunskip
 echo  ------------------------------------------------------------------------------
 echo.
@@ -3354,6 +3607,7 @@ echo  What do you want the error color to be?
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor 01
+echo.
 echo  1    Dark Blue
 %~dp0tools\Apps\chgcolor 02
 echo  2    Green
@@ -3372,21 +3626,22 @@ echo  8    Grey
 %~dp0tools\Apps\chgcolor 09
 echo  9    Light Blue
 %~dp0tools\Apps\chgcolor 0A
-echo 10    Light Green
+echo  10   Light Green
 %~dp0tools\Apps\chgcolor 0B
-echo 11    Light Aqua
+echo  11   Light Aqua
 %~dp0tools\Apps\chgcolor 0C
-echo 12    Light Red
+echo  12   Light Red
 %~dp0tools\Apps\chgcolor 0D
-echo 13    Light Purple
+echo  13   Light Purple
 %~dp0tools\Apps\chgcolor 0E
-echo 14    Light Yellow
+echo  14   Light Yellow
 %~dp0tools\Apps\chgcolor 0F
-echo 15    Bright White
+echo  15   Bright White
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 if %firstrun% EQU on goto firstrunskip
-echo 99    Go Back
+echo  99   Go Back
+echo.
 :firstrunskip
 echo  ------------------------------------------------------------------------------
 echo.
@@ -3737,6 +3992,7 @@ echo.
 echo Example: C:\Program Files\Android\android-sdk
 set /P input=Type input: %=%
 echo %input% > %~dp0tools\Settings\sdk_location.txt
+echo.
 cls
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
@@ -3764,13 +4020,13 @@ cls
 echo.
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %err%
-echo Android-sdk was not found at 
+echo  Android-sdk was not found at 
 echo.
 echo %sdklocation%
-echo or at C:\Program Files ^(x86^)\Android\android-sdk
-echo or at C:\Program Files\Android\android-sdk
+echo  or at C:\Program Files ^(x86^)\Android\android-sdk
+echo  or at C:\Program Files\Android\android-sdk
 echo.
-echo Install the Android-SDK to open an emulator
+echo  Install the Android-SDK to open an emulator
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
@@ -3791,18 +4047,18 @@ echo  --------------------------------------------------------------------------
 echo  Which version would you like to use
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
-echo  1    1.3.2
-echo  2    1.4.0
-echo  3    1.4.1
-echo  4    1.4.2
-echo  5    1.4.3
-echo  6    1.4.9
-echo  7    1.5.0
-echo  8    1.5.1
-echo  9    1.5.2
-echo.
+echo  #					#				     #
+echo  #	1    1.3.2	6    1.4.9	#		   11    2.0.0-b1    #
+echo  #	2    1.4.0	7    1.5.0	#    Apktool	   12    2.0.0-b2    #
+echo  #	3    1.4.1	8    1.5.1	#      2.0	   13    2.0.0-b3    #
+echo  #	4    1.4.2	9    1.5.2	#       b	   14    2.0.0-b4    #
+echo  #	5    1.4.3	10   1.5.3	#
+echo  #					#				     #
 if %firstrun% EQU on goto firstrunskip
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
 echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 :firstrunskip
 echo  ------------------------------------------------------------------------------
 echo.
@@ -3816,6 +4072,11 @@ if %input%==6 goto version6
 if %input%==7 goto version7
 if %input%==8 goto version8
 if %input%==9 goto version9
+if %input%==10 goto version10
+if %input%==11 goto version11
+if %input%==12 goto version12
+if %input%==13 goto version13
+if %input%==14 goto version14
 if %firstrun% EQU on goto firstrunmenuskip
 if %input%==99 goto restart
 :firstrunmenuskip
@@ -3865,6 +4126,31 @@ set apktool=apktool-1.5.2.jar
 echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
 if %firstrun% EQU on goto setupdates
 goto restart
+:version10
+set apktool=apktool-1.5.3.jar
+echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
+if %firstrun% EQU on goto setupdates
+goto restart
+:version11
+set apktool=apktool-2.0.0b1.jar
+echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
+if %firstrun% EQU on goto setupdates
+goto restart
+:version12
+set apktool=apktool-2.0.0b2.jar
+echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
+if %firstrun% EQU on goto setupdates
+goto restart
+:version13
+set apktool=apktool-2.0.0b3.jar
+echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
+if %firstrun% EQU on goto setupdates
+goto restart
+:version14
+set apktool=apktool-2.0.0b4.jar
+echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
+if %firstrun% EQU on goto setupdates
+goto restart
 																				::OPEN LOG
 :log
 cls
@@ -3874,6 +4160,7 @@ echo  --------------------------------------------------------------------------
 echo  Which Log Would You Like To View
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  1    Script Log
 if not exist %~dp0tools\logs\odexlog.log goto noodexlog
 set odexlog=on
@@ -3916,7 +4203,10 @@ echo  -    PNG Log was not found
 %~dp0tools\Apps\chgcolor %bg%
 :pnglogdone
 echo.
-echo 99    Go Back
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
+echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 set /P input=Please make your decision:
 if %input%==1 goto scriptlog
@@ -3962,50 +4252,71 @@ echo  --------------------------------------------------------------------------
 echo  Clean and Backup Menu
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
-echo  1    Clean the Done Folder
-echo  2    Clean the Originals Folder
-echo  3    Clean the Odex Originals Folder
-echo  4    Clean the place-here-for-modding Folder
-echo  5    Clean the Projects\Projects-smali Folders
-echo  6    Clean the Pulled folder
-echo  7    Clean All Folders\Files
-echo  8    Clean All Folders\Files with backup [Takes awhile]
 echo.
+echo  1    Clean the Done Folder
+echo  2    Clean the Droid-Screen
+echo  3    Clean the Originals Folder
+echo  4    Clean the Odex Originals Folder
+echo  5    Clean the place-here-for-modding Folder
+echo  6    Clean the place-scale-images Folder
+echo  7    Clean the Projects\Projects-smali Folders
+echo  8    Clean the Pulled Folder
+echo  9    Clean All Folders\Files
+echo  10   Clean All Folders\Files with backup [Takes awhile]
+echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
 echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 set /P input=Please make your decision:
 																				::CLEAN DONE
 if %input%==1 (
-	echo Clearing Done Dir
+	echo  Clearing Done Dir
 	rd /s /q %~dp0done
 	mkdir %~dp0done
 	mkdir %~dp0done\optimized
 	mkdir %~dp0done\flashable
 	goto restart
 )
-																				::CLEAN ORIGINALS
+																				::CLEAN DROID-SCREEN
 IF %input%==2 (
-	echo Clearing Originals Dir
+	echo  Clearing Droid-Screen folder
+	rd /s /q %~dp0droid-screen
+	mkdir %~dp0droid-screen
+	goto restart
+)
+																				::CLEAN ORIGINALS
+IF %input%==3 (
+	echo  Clearing Originals Dir
 	if exist %~dp0originals rd /s /q %~dp0originals
 	mkdir %~dp0originals
 	goto restart
 )
 																				::CLEAN ODEX ORIGINALS
-IF %input%==3 (
-	echo Clearing Odex Originals folder
+IF %input%==4 (
+	echo  Clearing Odex Originals folder
 	if exist %~dp0tools\odex\originals rd /s /q %~dp0tools\odex\originals
 	goto restart
 )
 																				::CLEAN PLACE-HERE-FOR-MODDING
-IF %input%==4 (
-	echo Clearing place-here-for-modding folder
+IF %input%==5 (
+	echo  Clearing place-here-for-modding folder
 	rd /s /q %~dp0place-here-for-modding
 	mkdir %~dp0place-here-for-modding
 	goto restart
 )
+																				::CLEAN PLACE-SCALE-IMAGES
+IF %input%==6 (
+	echo  Clearing place-scale-images folder
+	rd /s /q %~dp0place-scale-images
+	mkdir %~dp0place-scale-images
+	mkdir %~dp0place-scale-images\res
+	goto restart
+)
 																				::CLEAN PROJECTS AND PROJECTS-SMALI
-IF %input%==5 (
-	echo Clearing Projects and Projects-smali
+IF %input%==7 (
+	echo  Clearing Projects and Projects-smali
 	rd /s /q %~dp0projects
 	rd /s /q %~dp0projects-smali
 	mkdir %~dp0projects
@@ -4013,32 +4324,37 @@ IF %input%==5 (
 	goto restart
 )
 																				::CLEAN PULLED
-IF %input%==6 (
-	echo Clearing Pull
+IF %input%==8 (
+	echo  Clearing Pull
 	rd /s /q %~dp0pulled
 	mkdir %~dp0pulled
 	goto restart
 )
 																				::CLEAN ALL
-IF %input%==7 (
-	echo Cleaning all dirs
+IF %input%==9 (
+	echo  Cleaning all dirs
 	rd /s /q %~dp0done
+	rd /s /q %~dp0droid-screen
 	rd /s /q %~dp0originals
 	if exist %~dp0tools\odex\originals rd /s /q %~dp0tools\odex\originals
 	rd /s /q %~dp0place-here-for-modding
+	rd /s /q %~dp0place-scale-images
 	rd /s /q %~dp0projects
 	rd /s /q %~dp0projects-smali
 	rd /s /q %~dp0pulled
 	mkdir %~dp0done
+	mkdir %~dp0droid-screen
 	mkdir %~dp0originals
 	mkdir %~dp0place-here-for-modding
+	mkdir %~dp0place-scale-images
+	mkdir %~dp0place-scale-images\res
 	mkdir %~dp0projects
 	mkdir %~dp0projects-smali
 	mkdir %~dp0pulled
 	goto restart
 )
 																				::CLEAN ALL WITH BACKUP
-IF %input%==8 (
+IF %input%==10 (
 	goto renamebackupzip
 )
 IF %input%==99 goto restart
@@ -4054,12 +4370,12 @@ set min=%time:~3,2%
 set file=%month%.%day%.%year%_%hour%.%min%
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo The backup file will be named:
+echo  The backup file will be named:
 %~dp0tools\Apps\chgcolor %bg%
 echo %file%.zip
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Would you like to rename the file [y/n]
+echo  Would you like to rename the file [y/n]
 %~dp0tools\Apps\chgcolor %bg%
 set /P backup=Type input: %=%
 if %backup% EQU n goto makebackupzip
@@ -4070,23 +4386,27 @@ goto what
 cls
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Backing up and cleaning all dirs
-echo Please wait...
+echo  Backing up and cleaning all dirs
+echo  Please wait...
 %~dp0tools\Apps\chgcolor %bg%
 cd %~dp0
 if not exist %~dp0originals\odex\ mkdir %~dp0originals\odex\ > NUL
 if exist %~dp0tools\odex\originals move %~dp0tools\odex\originals %~dp0originals\odex\ > NUL
 %~dp0tools\Apps\7za.exe a %~dp0backup\%File%.zip "*" -x@%~dp0tools\Settings\exclude.txt -mx%usrc% -r > NUL
 rd /s /q %~dp0done
+rd /s /q %~dp0droid-screen
 rd /s /q %~dp0originals
 rd /s /q %~dp0place-here-for-modding
+rd /s /q %~dp0place-scale-images
 rd /s /q %~dp0projects
 rd /s /q %~dp0projects-smali
 rd /s /q %~dp0pulled
-rd /s /q %~dp0phone-info
 mkdir %~dp0done
+mkdir %~dp0droid-screen
 mkdir %~dp0originals
 mkdir %~dp0place-here-for-modding
+mkdir %~dp0place-scale-images
+mkdir %~dp0place-scale-images\res
 mkdir %~dp0projects
 mkdir %~dp0projects-smali
 mkdir %~dp0pulled
@@ -4109,7 +4429,7 @@ goto restart
 																				::RENAME BACKUP ZIP
 :renamezip
 set FILE=error
-echo Would you like to name the file?
+echo  Would you like to name the file?
 set /P FILE=Type input: %=%
 set file=%FILE%
 goto makebackupzip
@@ -4160,16 +4480,22 @@ echo  -------------------------------- Other Resource Files --------------------
 echo.
 echo  7    CM9
 echo  8    CM10
-echo  9    MIUI
+echo.
+echo  9    CM10.1 Nexus 4 (Schubi)
+echo.
+echo  10   MIUI
 echo.
 %~dp0tools\Apps\chgcolor %high%
 echo  -------------------------------- Use Your Own --------------------------------
 %~dp0tools\Apps\chgcolor %bg%
 echo.
-echo  10    Other
+echo  88   Other
 echo.
 echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
 echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 set /P input=Please make your decision:
 if %input% EQU 1 goto e4gtresource
@@ -4180,13 +4506,15 @@ if %input% EQU 5 goto evotleresource
 if %input% EQU 6 goto onexresource
 if %input% EQU 7 goto cm9resource
 if %input% EQU 8 goto cm10resource
-if %input% EQU 9 goto miuiresource
-if %input% EQU 10 goto resourceinstall
+if %input% EQU 9 goto cm101n4schubi
+if %input% EQU 10 goto miuiresource
+if %input% EQU 88 goto resourceinstall
 if %input% EQU 99 goto restart
 
 :e4gtresource
 move %UserProfile%\apktool\framework\1.apk %~dp0\backup\1-resource-backup-%file%.apk > NUL
 move %UserProfile%\apktool\framework\2.apk %~dp0\backup\2-resource-backup-%file%.apk > NUL
+move %UserProfile%\apktool\framework\127.apk %~dp0\backup\127-resource-backup-%file%.apk > NUL
 copy %~dp0tools\resources\e4gt\1.apk %UserProfile%\apktool\framework\1.apk > NUL
 copy %~dp0tools\resources\e4gt\2.apk %UserProfile%\apktool\framework\2.apk > NUL
 cls
@@ -4194,7 +4522,7 @@ echo.
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
 echo. 
-echo Your resource files have been set for the Galaxy Epic 4G Touch
+echo  Your resource files have been set for the Galaxy Epic 4G Touch
 echo.
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
@@ -4204,6 +4532,7 @@ goto restart
 :s3resource
 move %UserProfile%\apktool\framework\1.apk %~dp0\backup\1-resource-backup-%file%.apk > NUL
 move %UserProfile%\apktool\framework\2.apk %~dp0\backup\2-resource-backup-%file%.apk > NUL
+move %UserProfile%\apktool\framework\127.apk %~dp0\backup\127-resource-backup-%file%.apk > NUL
 copy %~dp0tools\resources\s3\1.apk %UserProfile%\apktool\framework\1.apk > NUL
 copy %~dp0tools\resources\s3\2.apk %UserProfile%\apktool\framework\2.apk > NUL
 cls
@@ -4211,7 +4540,7 @@ echo.
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
 echo. 
-echo Your resource files have been set for the Galaxy SIII
+echo  Your resource files have been set for the Galaxy SIII
 echo.
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
@@ -4221,6 +4550,7 @@ goto restart
 :n7resource
 move %UserProfile%\apktool\framework\1.apk %~dp0\backup\1-resource-backup-%file%.apk > NUL
 move %UserProfile%\apktool\framework\2.apk %~dp0\backup\2-resource-backup-%file%.apk > NUL
+move %UserProfile%\apktool\framework\127.apk %~dp0\backup\127-resource-backup-%file%.apk > NUL
 copy %~dp0tools\resources\n7\1.apk %UserProfile%\apktool\framework\1.apk > NUL
 copy %~dp0tools\resources\n7\2.apk %UserProfile%\apktool\framework\2.apk > NUL
 cls
@@ -4228,7 +4558,7 @@ echo.
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
 echo. 
-echo Your resource files have been set for the Nexus 7
+echo  Your resource files have been set for the Nexus 7
 echo.
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
@@ -4238,6 +4568,7 @@ goto restart
 :evotleresource
 move %UserProfile%\apktool\framework\1.apk %~dp0\backup\1-resource-backup-%file%.apk > NUL
 move %UserProfile%\apktool\framework\2.apk %~dp0\backup\2-resource-backup-%file%.apk > NUL
+move %UserProfile%\apktool\framework\127.apk %~dp0\backup\127-resource-backup-%file%.apk > NUL
 copy %~dp0tools\resources\evolte\1.apk %UserProfile%\apktool\framework\1.apk > NUL
 copy %~dp0tools\resources\evolte\2.apk %UserProfile%\apktool\framework\2.apk > NUL
 cls
@@ -4245,7 +4576,7 @@ echo.
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
 echo. 
-echo Your resource files have been set for the Evo LTE
+echo  Your resource files have been set for the Evo LTE
 echo.
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
@@ -4255,6 +4586,7 @@ goto restart
 :gnexresource
 move %UserProfile%\apktool\framework\1.apk %~dp0\backup\1-resource-backup-%file%.apk > NUL
 move %UserProfile%\apktool\framework\2.apk %~dp0\backup\2-resource-backup-%file%.apk > NUL
+move %UserProfile%\apktool\framework\127.apk %~dp0\backup\127-resource-backup-%file%.apk > NUL
 copy %~dp0tools\resources\gnex\1.apk %UserProfile%\apktool\framework\1.apk > NUL
 copy %~dp0tools\resources\gnex\2.apk %UserProfile%\apktool\framework\2.apk > NUL
 cls
@@ -4262,7 +4594,7 @@ echo.
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
 echo. 
-echo Your resource files have been set for the Galaxy Nexus
+echo  Your resource files have been set for the Galaxy Nexus
 echo.
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
@@ -4272,6 +4604,7 @@ goto restart
 :onexresource
 move %UserProfile%\apktool\framework\1.apk %~dp0\backup\1-resource-backup-%file%.apk > NUL
 move %UserProfile%\apktool\framework\2.apk %~dp0\backup\2-resource-backup-%file%.apk > NUL
+move %UserProfile%\apktool\framework\127.apk %~dp0\backup\127-resource-backup-%file%.apk > NUL
 copy %~dp0tools\resources\onex\1.apk %UserProfile%\apktool\framework\1.apk > NUL
 copy %~dp0tools\resources\onex\2.apk %UserProfile%\apktool\framework\2.apk > NUL
 cls
@@ -4279,7 +4612,7 @@ echo.
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
 echo. 
-echo Your resource files have been set for the One X
+echo  Your resource files have been set for the One X
 echo.
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
@@ -4289,6 +4622,7 @@ goto restart
 :cm9resource
 move %UserProfile%\apktool\framework\1.apk %~dp0\backup\1-resource-backup-%file%.apk > NUL
 move %UserProfile%\apktool\framework\2.apk %~dp0\backup\2-resource-backup-%file%.apk > NUL
+move %UserProfile%\apktool\framework\127.apk %~dp0\backup\127-resource-backup-%file%.apk > NUL
 copy %~dp0tools\resources\cm9\1.apk %UserProfile%\apktool\framework\1.apk > NUL
 copy %~dp0tools\resources\cm9\2.apk %UserProfile%\apktool\framework\2.apk > NUL
 cls
@@ -4296,7 +4630,7 @@ echo.
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
 echo. 
-echo Your resource files have been set for CM9
+echo  Your resource files have been set for CM9
 echo.
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
@@ -4306,6 +4640,7 @@ goto restart
 :cm10resource
 move %UserProfile%\apktool\framework\1.apk %~dp0\backup\1-resource-backup-%file%.apk > NUL
 move %UserProfile%\apktool\framework\2.apk %~dp0\backup\2-resource-backup-%file%.apk > NUL
+move %UserProfile%\apktool\framework\127.apk %~dp0\backup\127-resource-backup-%file%.apk > NUL
 copy %~dp0tools\resources\cm10\1.apk %UserProfile%\apktool\framework\1.apk > NUL
 copy %~dp0tools\resources\cm10\2.apk %UserProfile%\apktool\framework\2.apk > NUL
 cls
@@ -4313,7 +4648,26 @@ echo.
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
 echo. 
-echo Your resource files have been set for CM10
+echo  Your resource files have been set for CM10
+echo.
+%~dp0tools\Apps\chgcolor %bg%
+echo  ------------------------------------------------------------------------------
+echo.
+PAUSE
+goto restart
+:cm101n4schubi
+move %UserProfile%\apktool\framework\1.apk %~dp0\backup\1-resource-backup-%file%.apk > NUL
+move %UserProfile%\apktool\framework\2.apk %~dp0\backup\2-resource-backup-%file%.apk > NUL
+move %UserProfile%\apktool\framework\127.apk %~dp0\backup\127-resource-backup-%file%.apk > NUL
+copy %~dp0tools\resources\cm101n4schubi\1.apk %UserProfile%\apktool\framework\1.apk > NUL
+copy %~dp0tools\resources\cm101n4schubi\2.apk %UserProfile%\apktool\framework\2.apk > NUL
+copy %~dp0tools\resources\cm101n4schubi\127.apk %UserProfile%\apktool\framework\127.apk > NUL
+cls
+echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
+echo. 
+echo  Your resource files have been set for CM10.1 Schubi
 echo.
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
@@ -4323,6 +4677,7 @@ goto restart
 :miuiresource
 move %UserProfile%\apktool\framework\1.apk %~dp0\backup\1-resource-backup-%file%.apk > NUL
 move %UserProfile%\apktool\framework\2.apk %~dp0\backup\2-resource-backup-%file%.apk > NUL
+move %UserProfile%\apktool\framework\127.apk %~dp0\backup\127-resource-backup-%file%.apk > NUL
 copy %~dp0tools\resources\miui\1.apk %UserProfile%\apktool\framework\1.apk > NUL
 copy %~dp0tools\resources\miui\2.apk %UserProfile%\apktool\framework\2.apk > NUL
 cls
@@ -4330,7 +4685,7 @@ echo.
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
 echo. 
-echo Your resource files have been set for MIUI
+echo  Your resource files have been set for MIUI
 echo.
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
@@ -4342,13 +4697,13 @@ goto restart
 set input=error
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Where is your framework-res.apk file?
+echo  Where is your framework-res.apk file?
 echo.
-echo Example: C:\framework-res.apk
+echo  Example: C:\framework-res.apk
 %~dp0tools\Apps\chgcolor %bg%
 set /P input=Type input or drag file here: %=%
 echo.
-echo Setting new resource file and backing up the old one
+echo  Setting new resource file and backing up the old one
 copy /y %input% %~dp0tools\temp\framework-res.apk > NUL
 %~dp0tools\Apps\7za.exe x %~dp0tools\temp\framework-res.apk -y -o%~dp0tools\temp\framework\ > NUL
 mkdir %~dp0tools\temp\framework2
@@ -4365,11 +4720,11 @@ cls
 set input=error
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Where is your secondary resource file?
+echo  Where is your secondary resource file?
 echo.
-echo Example: C:\twframework-res.apk or c:\com.htc.resources.apk
+echo  Example: C:\twframework-res.apk or c:\com.htc.resources.apk
 %~dp0tools\Apps\chgcolor %bg%
-echo if AOSP based ROM use the framework-res.apk file again
+echo  if AOSP based ROM use the framework-res.apk file again
 set /P input=Type input: %=%
 echo.
 copy /y %input% %~dp0tools\temp\framework-res2.apk > NUL
@@ -4391,22 +4746,22 @@ start /min %~dp0tools\beep.bat
 echo  ------------------------------------------------------------------------------
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Your new 1 resource file is set and located at:
+echo  Your new 1 resource file is set and located at:
 %~dp0tools\Apps\chgcolor %bg%
 echo %UserProfile%\apktool\framework\1.apk
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Your old resource file is located at:
+echo  Your old resource file is located at:
 %~dp0tools\Apps\chgcolor %bg%
 echo %~dp0backup\1-resource-backup-%file%.apk
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Your new 2 resource file is set and located at:
+echo  Your new 2 resource file is set and located at:
 %~dp0tools\Apps\chgcolor %bg%
 echo %UserProfile%\apktool\framework\2.apk
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Your old resource file is located at:
+echo  Your old resource file is located at:
 %~dp0tools\Apps\chgcolor %bg%
 echo %~dp0backup\2-resource-backup-%file%.apk
 echo.
@@ -4429,7 +4784,7 @@ for /F "tokens=* skip=1 delims=" %%a in (%~dp0tools\temp\adb.txt) do (
 if /I !count! LSS 2 goto rebootrnow
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo There are multiple devices plugged in. Which do you want to pull from?
+echo  There are multiple devices plugged in. Which do you want to pull from?
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 %~dp0tools\adb.exe devices>%~dp0tools\temp\adb.txt
@@ -4451,7 +4806,7 @@ echo Waiting for device
 %~dp0tools\adb.exe wait-for-device > NUL
 %~dp0tools\adb.exe remount > NUL
 echo.
-echo Rebooting the phone to Recovery
+echo  Rebooting the phone to Recovery
 %~dp0tools\adb.exe reboot recovery
 goto restart
 																				::REBOOT PHONE
@@ -4469,7 +4824,7 @@ for /F "tokens=* skip=1 delims=" %%a in (%~dp0tools\temp\adb.txt) do (
 if /I !count! LSS 2 goto rebootnow
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo There are multiple devices plugged in. Which do you want to pull from?
+echo  There are multiple devices plugged in. Which do you want to pull from?
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 %~dp0tools\adb.exe devices>%~dp0tools\temp\adb.txt
@@ -4487,11 +4842,11 @@ set device=!a%input%!
 set devicefinal=%device:~0,-7%
 :rebootnow
 cd %~dp0tools
-echo Waiting for device
+echo  Waiting for device
 %~dp0tools\adb.exe wait-for-device > NUL
 %~dp0tools\adb.exe remount > NUL
 echo.
-echo Rebooting the phone
+echo  Rebooting the phone
 %~dp0tools\adb.exe reboot
 goto restart
 																				::SET COMPRESSION
@@ -4513,10 +4868,38 @@ goto restart
 :notepad
 start %~dp0tools\Apps\Notepad++\notepad++.exe
 goto restart
+																				::OPEN DROID At SCREEN
+:droidatscreen
+start %~dp0tools\Apps\droidatscreen.jar
+goto restart
+																				::OPEN BETTER 9 PATCH
+:better9patch
+start %~dp0tools\Apps\better9patch.jar
+goto restart
+																				::OPEN ADB FILE EXPLORER
+:adbfileexplorer
+start %~dp0tools\Apps\ADBFileExplorer.exe
+goto restart
+																				::OPEN AMXL PRINTER GUI
+:amxlprintergui
+start %~dp0tools\Apps\AXMLPrinterGUI\AXMLPrinter.exe
+goto restart
+																				::OPEN ANDROID IMAGE SCALER
+:androidimagescaler
+start %~dp0tools\Apps\AndroidImageScaler\AndroidImageScaler.exe
+goto restart
+																				::OPEN JD-GUI
+:jdgui
+start %~dp0tools\Apps\Jd-GUI\jd-gui.exe
+goto restart
+																				::OPEN HXD HEX EDITOR
+:hxd
+start %~dp0tools\Apps\HxD\HxD.exe
+goto restart
 																				::PHONE MENU
 :phone
 cls
-echo Checking ADB connection status
+echo  Checking ADB connection status
 set adbwifi=Connected
 %~dp0tools\adb.exe devices>%~dp0tools\temp\adb.txt
 set /A count=0
@@ -4545,6 +4928,7 @@ echo  -    No phone or emulator connected
 goto emulatordone
 :allowemulator
 set emulator=on
+echo.
 echo  1    Open Adb shell
 :emulatordone
 echo  2    Open an Android Emulator
@@ -4632,7 +5016,10 @@ set rebootrecovery=on
 echo  11   Reboot the phone to recovery
 :rebootrecoverydone
 echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
 echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
 set /P input=Type input: %=%
@@ -4694,6 +5081,7 @@ echo  --------------------------------------------------------------------------
 echo  Pushing needed information to the phone
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  Please Wait...
 echo.
 %~dp0tools\adb.exe -s %devicefinal% shell "echo 'backup_rom(\"/sdcard/clockworkmod/backup/%file%\");' >> /cache/recovery/extendedcommand"
@@ -4730,6 +5118,7 @@ echo  --------------------------------------------------------------------------
 echo  Which backup do you want to restore?
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 set /A count=0
 if exist %~dp0tools\odex\apps.txt del /q %~dp0tools\odex\apps.txt
 %~dp0tools\adb.exe -s %devicefinal% shell "ls /sdcard/clockworkmod/backup/ | xargs -n 1 basename">>%~dp0tools\odex\apps.txt
@@ -4742,6 +5131,7 @@ for /f %%A in (%~dp0tools\odex\apps.txt) do (
 )
 echo.
 echo   99  Go Back
+echo.
 echo  ------------------------------------------------------------------------------
 set /P input=Enter It's Number: %=%
 if %input% EQU 99 goto restart
@@ -4754,6 +5144,7 @@ echo  --------------------------------------------------------------------------
 echo  Starting the Restore Process
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  Please Wait...
 echo.
 %~dp0tools\adb.exe -s %devicefinal% shell "echo 'restore_rom(\"/sdcard/clockworkmod/backup/%restore%\");' >> /cache/recovery/extendedcommand"
@@ -4796,6 +5187,7 @@ echo  --------------------------------------------------------------------------
 echo  Which backup do you want to manage?
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 set /A count=0
 %~dp0tools\adb.exe -s %devicefinal% shell "ls /sdcard/clockworkmod/backup/ | xargs -n 1 basename">%~dp0tools\temp\apps.txt
 for /f %%A in (%~dp0tools\temp\apps.txt) do (
@@ -4804,6 +5196,7 @@ for /f %%A in (%~dp0tools\temp\apps.txt) do (
 	if /I !count! LSS 10 echo   !count!   %%A
 	if /I !count! GTR 9 echo   !count!  %%A
 )
+echo.
 echo  ------------------------------------------------------------------------------
 set /P input=Enter It's Number: %=%
 if /I %input% GTR !count! goto what
@@ -4817,10 +5210,14 @@ echo  --------------------------------------------------------------------------
 echo  What would you like to do with this backup?
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  1    Delete it
 echo  2    Fix MD5 mismatch error
 echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
 echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 set /P choice=Enter a number: %=%
 if %choice% EQU 1 goto deletenand
@@ -4829,9 +5226,11 @@ if %choice% EQU 99 goto restart
 goto what
 :nobackups
 echo  ------------------------------------------------------------------------------
+echo.
 %~dp0tools\Apps\chgcolor %err%
 echo  You have no backups to manage
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  ------------------------------------------------------------------------------
 echo.
 PAUSE
@@ -4840,14 +5239,18 @@ goto restart
 :deletenand
 set deleteme=!a%input%!
 cls
+echo.
 echo  ------------------------------------------------------------------------------
+echo.
 %~dp0tools\Apps\chgcolor %high%
 echo  Deleting /sdcard/clockworkmod/backup/%deleteme%
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  ------------------------------------------------------------------------------
+echo.
 %~dp0tools\adb.exe -s %devicefinal% shell rm -rf /sdcard/clockworkmod/backup/%deleteme%
 echo. 
-echo /sdcard/clockworkmod/backup/%deleteme% has been deleted.
+echo  /sdcard/clockworkmod/backup/%deleteme% has been deleted.
 echo.
 echo.
 PAUSE
@@ -4856,14 +5259,17 @@ goto restart
 :fixmd5
 set fixme=!a%input%!
 cls
+echo.
 echo  ------------------------------------------------------------------------------
+echo.
 %~dp0tools\Apps\chgcolor %err%
-echo WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING
+echo      WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 echo  This should allow you to restore this backup. 
 echo.
 echo  This does not guarantee that the nand is actually good.
+echo.
 echo  ------------------------------------------------------------------------------
 echo.
 echo  Fixing MD5...
@@ -4875,11 +5281,13 @@ echo  Making new nandroid.md5
 %~dp0tools\adb.exe -s %devicefinal% shell "md5sum /sdcard/clockworkmod/backup/%fixme%/*img > /sdcard/clockworkmod/backup/%fixme%/nandroid.md5"
 echo.
 echo  ------------------------------------------------------------------------------
+echo.
 %~dp0tools\Apps\chgcolor %high%
 echo  Fixed /sdcard/clockworkmod/backup/%fixme%/
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 echo  You should be able to restore it now.
+echo.
 echo  ------------------------------------------------------------------------------
 echo.
 PAUSE
@@ -4908,13 +5316,17 @@ echo  --------------------------------------------------------------------------
 echo  Permissions Menu
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  -    What file would you like to set?
 echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
 echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Example: /system/app/Email.apk
+echo  Example: /system/app/Email.apk
 echo.
 %~dp0tools\Apps\chgcolor %bg%
 set /P input=Type input: %=%
@@ -4922,11 +5334,11 @@ echo.
 set file=%input%
 if %input% EQU 99 goto restart
 %~dp0tools\Apps\chgcolor %high%
-echo What permissions would you like to give it?
+echo  What permissions would you like to give it?
 set input=error
 echo.
 %~dp0tools\Apps\chgcolor %bg%
-echo Common Permssions
+echo  Common Permssions
 %~dp0tools\Apps\chgcolor %high%
 echo.
 echo 755 for /system/etc/init.d/  rwxr-xr-x
@@ -4941,7 +5353,7 @@ set /P input=Enter a Number: %=%
 %~dp0tools\adb.exe shell chmod %input% %file%
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Permission %input% was set on %file%
+echo  Permission %input% was set on %file%
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 PAUSE
@@ -4970,13 +5382,13 @@ cls
 echo.
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %err%
-echo Android-sdk was not found at 
+echo  Android-sdk was not found at 
 echo.
 echo %sdklocation%
-echo or at C:\Program Files ^(x86^)\Android\android-sdk
-echo or at C:\Program Files\Android\android-sdk
+echo  or at C:\Program Files ^(x86^)\Android\android-sdk
+echo  or at C:\Program Files\Android\android-sdk
 echo.
-echo Install the Android-SDK to open an emulator
+echo  Install the Android-SDK to open an emulator
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 if %sound%==0 goto skipbeep7
@@ -5003,13 +5415,13 @@ cls
 echo.
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %err%
-echo Android-sdk was not found at 
+echo  Android-sdk was not found at 
 echo.
 echo %sdklocation%
-echo or at C:\Program Files ^(x86^)\Android\android-sdk
-echo or at C:\Program Files\Android\android-sdk
+echo  or at C:\Program Files ^(x86^)\Android\android-sdk
+echo  or at C:\Program Files\Android\android-sdk
 echo.
-echo Install the Android-SDK to open an emulator
+echo  Install the Android-SDK to open an emulator
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
@@ -5032,7 +5444,7 @@ for /F "tokens=* skip=1 delims=" %%a in (%~dp0tools\temp\adb.txt) do (
 if /I !count! LSS 2 goto deodexmenu
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo There are multiple devices plugged in. Which do you want to deodex?
+echo  There are multiple devices plugged in. Which do you want to deodex?
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 %~dp0tools\adb.exe devices>%~dp0tools\temp\adb.txt
@@ -5058,6 +5470,7 @@ echo  What api level is your ROM?
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  17   [Jelly Bean 4.2]
 echo  16   [Jelly Bean 4.1, 4.1.1, 4.1.2]
 echo  15   [Ice Cream Sandwich 4.0.3, 4.0.4]
@@ -5074,7 +5487,10 @@ echo   5   [Eclair 2.0]
 echo   4   [Donut 1.6]
 echo   3   [Cupcake 1.5]
 echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
 echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
 set /P input=Enter a choice:
@@ -5094,8 +5510,9 @@ set input=error
 echo.
 echo.
 %~dp0tools\Apps\chgcolor %err%
-echo WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING
+echo      WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  ------------------------------------------------------------------------------
 echo.
 %~dp0tools\Apps\chgcolor %err%
@@ -5128,8 +5545,9 @@ set input=error
 echo.
 echo.
 %~dp0tools\Apps\chgcolor %err%
-echo WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING
+echo      WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  ------------------------------------------------------------------------------
 echo.
 echo  This will deodex the ROM currently on your phone.
@@ -5156,19 +5574,20 @@ if exist %~dp0tools\odex\odex\system\framework rd /s /q %~dp0tools\odex\odex\sys
 mkdir %~dp0tools\odex\odex\system\framework
 if exist %~dp0tools\odex\odex\system\app rd /s /q %~dp0tools\odex\odex\system\app
 mkdir %~dp0tools\odex\odex\system\app
-echo Waiting for device
+echo  Waiting for device
 %~dp0tools\adb.exe wait-for-device > NUL
 %~dp0tools\adb.exe -s %devicefinal% remount >%~dp0tools\logs\deodexlog.log
 echo.
-echo Pulling the ROMs /system/app/ and /system/framework/ directories
-echo Please Wait...
+echo  Pulling the ROMs /system/app/ and /system/framework/ directories
+echo  Please Wait...
 %~dp0tools\adb.exe -s %devicefinal% pull /system/framework/ %~dp0tools\odex\odex\system\framework\
 %~dp0tools\adb.exe -s %devicefinal% pull /system/app/ %~dp0tools\odex\odex\system\app\
 cls
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Starting the deodexing process please wait...
+echo  Starting the deodexing process please wait...
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  ------------------------------------------------------------------------------
 echo.
 set baksmali="%~dp0tools\build\baksmali.jar"
@@ -5182,8 +5601,9 @@ mkdir %~dp0tools\odex\deodex\system\app >>%~dp0tools\logs\deodexlog.log
 if exist %~dp0tools\odex\deodex\system\framework rd /s /q %~dp0tools\odex\deodex\system\framework >>%~dp0tools\logs\deodexlog.log
 mkdir %~dp0tools\odex\deodex\system\framework >>%~dp0tools\logs\deodexlog.log
 %~dp0tools\Apps\chgcolor %high%
-echo Deodexing all /system/framework/ jars
+echo  Deodexing all /system/framework/ jars
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  ------------------------------------------------------------------------------
 echo.
 set errors=0
@@ -5192,15 +5612,17 @@ for %%F in (%~dp0tools\odex\odex\system\framework\*.apk) do move %%F %~dp0tools\
 for %%F in (%~dp0tools\odex\odex\system\framework\*.jar) do call %~dp0tools\odex\deodexjar %%F 0 %usrc% %api%
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Deodexing all /system/app/ apks
+echo  Deodexing all /system/app/ apks
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  ------------------------------------------------------------------------------
 echo.
 for %%F in (%~dp0tools\odex\odex\system\app\*.apk) do call %~dp0tools\odex\deodexapk %%F 0 %usrc% %api%
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Moving new deodexed files and cleaning up temp files
+echo  Moving new deodexed files and cleaning up temp files
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  ------------------------------------------------------------------------------
 if exist %~dp0done\deodexed\system\app rd /s /q %~dp0done\deodexed\system\app >>%~dp0tools\logs\deodexlog.log
 mkdir %~dp0done\deodexed\system\app >>%~dp0tools\logs\deodexlog.log
@@ -5218,13 +5640,15 @@ if %errors% GTR 0 goto deodexerrors
 echo %errors%
 set input=error
 %~dp0tools\Apps\chgcolor %high%
-echo Deodexing Complete!
+echo  Deodexing Complete!
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  ------------------------------------------------------------------------------
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Would you like to make a CWM flashable zip of your new files?
+echo  Would you like to make a CWM flashable zip of your new files?
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  ------------------------------------------------------------------------------
 set /P input=Enter a choice [y/n]:
 echo.
@@ -5253,7 +5677,7 @@ cls
 echo.
 set input=error
 %~dp0tools\Apps\chgcolor %high%
-echo Deodexing Complete!
+echo  Deodexing Complete!
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
@@ -5276,7 +5700,7 @@ start %~dp0tools\Apps\Notepad++\notepad++.exe %~dp0tools\odex\errorfile.txt
 echo  ------------------------------------------------------------------------------
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Would you still like to make a CWM flashable zip of your new files?
+echo  Would you still like to make a CWM flashable zip of your new files?
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 set /P input=Enter a choice [y/n]:
@@ -5301,9 +5725,9 @@ echo.
 echo  ------------------------------------------------------------------------------
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Zipping your new deodexed fIles
+echo  Zipping your new deodexed fIles
 echo.
-echo Please wait...
+echo  Please wait...
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 copy /y %~dp0done\deodexed\system\app\* %~dp0tools\cwm\system\app\ > NUL
@@ -5314,16 +5738,18 @@ del /q %~dp0tools\cwm\system\framework\* > NUL
 del /q %~dp0tools\cwm\system\app\* > NUL
 del /q %~dp0tools\cwm\tools\* > NUL
 %~dp0tools\Apps\chgcolor %high%
-echo Your new CWM Zip file is located at: 
+echo  Your new CWM Zip file is located at: 
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  ------------------------------------------------------------------------------
 echo.
 echo %~dp0done\flashable\Deodexed-%file%-CWM.zip
 echo. 
 echo. 
 %~dp0tools\Apps\chgcolor %high%
-echo Your new deodexed files are located at: 
+echo  Your new deodexed files are located at: 
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  ------------------------------------------------------------------------------
 echo.
 echo %~dp0done\deodexed\
@@ -5336,8 +5762,9 @@ cls
 echo.
 set input=error
 %~dp0tools\Apps\chgcolor %high%
-echo What do you want to deodex?
+echo  What do you want to deodex?
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  ------------------------------------------------------------------------------
 echo.
 echo Example: C:\something.apk
@@ -5376,7 +5803,7 @@ for /F "tokens=* skip=1 delims=" %%a in (%~dp0tools\temp\adb.txt) do (
 if /I !count! LSS 2 goto deodexsingledevice
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo There are multiple devices plugged in. Which do you want to use to deodex?
+echo  There are multiple devices plugged in. Which do you want to use to deodex?
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 %~dp0tools\adb.exe devices>%~dp0tools\temp\adb.txt
@@ -5397,7 +5824,7 @@ set devicefinal=%device:~0,-7%
 :deodexsingledevice
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Getting required information from your phone
+echo  Getting required information from your phone
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 %~dp0tools\adb.exe -s %devicefinal% pull /init.rc %~dp0tools\odex\init.rc
@@ -5452,7 +5879,7 @@ if exist %~dp0tools\odex\odex\system\app\ rd /s /q %~dp0tools\odex\odex\system\a
 if exist %~dp0tools\odex\odex\system\framework\ rd /s /q %~dp0tools\odex\odex\system\framework\
 echo. 
 %~dp0tools\Apps\chgcolor %high%
-echo Your new deodexed file is located at: 
+echo  Your new deodexed file is located at: 
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 echo %~dp0done\unsigned%capp%
@@ -5484,7 +5911,7 @@ goto restart
 echo.
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %err%
-echo WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING
+echo      WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
@@ -5522,7 +5949,7 @@ for /F "tokens=* skip=1 delims=" %%a in (%~dp0tools\temp\adb.txt) do (
 if /I !count! LSS 2 goto odexsingle
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo There are multiple devices plugged in. Which do you want to odex?
+echo  There are multiple devices plugged in. Which do you want to odex?
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 %~dp0tools\adb.exe devices>%~dp0tools\temp\adb.txt
@@ -5559,11 +5986,12 @@ if exist %~dp0tools\odex\init.rc del /q %~dp0tools\odex\init.rc > NUL
 cls
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Getting needed information from your phone.
-echo Do not unplug your phone until the odexing process has finished.
+echo  Getting needed information from your phone.
+echo  Do not unplug your phone until the odexing process has finished.
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  ------------------------------------------------------------------------------
-echo Please wait...
+echo  Please wait...
 %~dp0tools\adb.exe -s %devicefinal% shell mkdir /sdcard/odex>>%~dp0tools\logs\odexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell rm -rf /sdcard/odex/framework/>>%~dp0tools\logs\odexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell mkdir /sdcard/odex/framework>>%~dp0tools\logs\odexlog.log
@@ -5576,8 +6004,9 @@ mkdir %~dp0done\odexed\system\app\ > NUL
 if exist %~dp0tools\logs\odexlog.log  del /q %~dp0tools\logs\odexlog.log > NUL
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Pushing needed tools to your phone.
+echo  Pushing needed tools to your phone.
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  ------------------------------------------------------------------------------
 %~dp0tools\adb.exe -s %devicefinal% push %~dp0tools\odex\dexopt-wrapper /system/bin/>>%~dp0tools\logs\odexlog.log
 %~dp0tools\adb.exe -s %devicefinal% push %~dp0tools\odex\zip /system/bin/>>%~dp0tools\logs\odexlog.log
@@ -5594,8 +6023,9 @@ for /f %%C in ('Find /V /C "" ^< %~dp0tools\Settings\odexedframework.txt') do se
 if exist %~dp0tools\Settings\odexedframework.txt del /q %~dp0tools\Settings\odexedframework.txt
 if %count% GTR 1 goto odexedframework
 %~dp0tools\Apps\chgcolor %high%
-echo Odexing Bootclasspath jars
+echo  Odexing Bootclasspath jars
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  ------------------------------------------------------------------------------
 ::DO NOT REMOVE
 :loop
@@ -5633,7 +6063,7 @@ goto loop
 ::DO NOT REMOVE
 :skip
 echo.
-echo Pulling new bootclass odex files
+echo  Pulling new bootclass odex files
 %~dp0tools\adb.exe -s %devicefinal% pull /system/framework/ %~dp0done\odexed\system\framework\>>%~dp0tools\logs\odexlog.log
 del /q %~dp0done\odexed\system\framework\*.jar>>%~dp0tools\logs\odexlog.log
 del /q %~dp0tools\Settings\bootclass.txt>>%~dp0tools\logs\odexlog.log
@@ -5641,8 +6071,9 @@ del /q %~dp0tools\Settings\bootclass.txt>>%~dp0tools\logs\odexlog.log
 echo.
 																				::ODEX ROM [ODEXING REMAINING FRAMEWORK JARS]
 %~dp0tools\Apps\chgcolor %high%
-echo Odexing /system/framework jars
+echo  Odexing /system/framework jars
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  ------------------------------------------------------------------------------
 for /f "tokens=* delims= " %%A in (%~dp0tools\odex\items.txt) do (
 	set app=%%A
@@ -5674,37 +6105,38 @@ for /f "tokens=* delims= " %%A in (%~dp0tools\odex\items.txt) do (
 																				::ODEX ROM [ODEXING SYSTEM APPS]
 :odexjustapps
 %~dp0tools\Apps\chgcolor %high%
-echo Odexing /system/app apks
-echo Your phone may hot reboot a few times. It will be fine.
+echo  Odexing /system/app apks
+echo  Your phone may hot reboot a few times. It will be fine.
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  ------------------------------------------------------------------------------
 %~dp0tools\adb.exe -s %devicefinal% shell "ls /system/app/*.apk | xargs -n 1 basename">%~dp0tools\odex\apps.txt
 for /f "tokens=* delims= " %%A in (%~dp0tools\odex\apps.txt) do (
 	set app=%%A
 	set app2=!app:~0,100!
-	echo Odexing !app2:~0,-1!
-	echo Odexing !app2:~0,-1! with the command:>>%~dp0tools\logs\odexlog.log
+	echo  Odexing !app2:~0,-1!
+	echo  Odexing !app2:~0,-1! with the command:>>%~dp0tools\logs\odexlog.log
 	%~dp0tools\adb.exe wait-for-device>>%~dp0tools\logs\odexlog.log
 	echo %~dp0tools\adb.exe -s %devicefinal% shell dexopt-wrapper '/system/app/!app2:~0,-1!' '/system/app/!app2:~0,-5!.odex'>>%~dp0tools\logs\odexlog.log
 	echo.>>%~dp0tools\logs\odexlog.log
-	echo DEXOPT-WRAPPER OUTPUT:>>%~dp0tools\logs\odexlog.log
+	echo  DEXOPT-WRAPPER OUTPUT:>>%~dp0tools\logs\odexlog.log
 	%~dp0tools\adb.exe -s %devicefinal% shell dexopt-wrapper '/system/app/!app2:~0,-1!' '/system/app/!app2:~0,-5!.odex'>>%~dp0tools\logs\odexlog.log
-	echo Copying /system/app/!app2:~0,-1! to /sdcard/odex/app/Temp-!app2:~0,-1!>>%~dp0tools\logs\odexlog.log
+	echo  Copying /system/app/!app2:~0,-1! to /sdcard/odex/app/Temp-!app2:~0,-1!>>%~dp0tools\logs\odexlog.log
 	%~dp0tools\adb.exe -s %devicefinal% shell cp -rf /system/app/!app2:~0,-1! /sdcard/odex/app/Temp-!app2:~0,-1!>>%~dp0tools\logs\odexlog.log
-	echo Removing classes.dex from /sdcard/odex/app/Temp-!app2:~0,-1!>>%~dp0tools\logs\odexlog.log
+	echo  Removing classes.dex from /sdcard/odex/app/Temp-!app2:~0,-1!>>%~dp0tools\logs\odexlog.log
 	%~dp0tools\adb.exe -s %devicefinal% shell zip -d /sdcard/odex/app/Temp-!app2:~0,-1! classes.dex>>%~dp0tools\logs\odexlog.log
-	echo zipaligning /sdcard/odex/app/Temp-!app2:~0,-1!>>%~dp0tools\logs\odexlog.log
+	echo  zipaligning /sdcard/odex/app/Temp-!app2:~0,-1!>>%~dp0tools\logs\odexlog.log
 	%~dp0tools\adb.exe -s %devicefinal% shell zipalign -f 4 /sdcard/odex/app/Temp-!app2:~0,-1! /sdcard/odex/app/!app2:~0,-1!>>%~dp0tools\logs\odexlog.log
-	echo Copying /sdcard/odex/app/!app2:~0,-1! to /system/app/!app2:~0,-1!>>%~dp0tools\logs\odexlog.log
+	echo  Copying /sdcard/odex/app/!app2:~0,-1! to /system/app/!app2:~0,-1!>>%~dp0tools\logs\odexlog.log
 	%~dp0tools\adb.exe -s %devicefinal% shell cp -rf /sdcard/odex/app/!app2:~0,-1! /system/app/!app2:~0,-1!>>%~dp0tools\logs\odexlog.log
-	echo Removing Temp file: /sdcard/odex/app/Temp-!app2:~0,-1!>>%~dp0tools\logs\odexlog.log
+	echo  Removing Temp file: /sdcard/odex/app/Temp-!app2:~0,-1!>>%~dp0tools\logs\odexlog.log
 	%~dp0tools\adb.exe -s %devicefinal% shell rm -rf /sdcard/odex/app/Temp-!app2:~0,-1!>>%~dp0tools\logs\odexlog.log
 	echo.>>%~dp0tools\logs\odexlog.log
 	echo.>>%~dp0tools\logs\odexlog.log
 )
 echo.
 																				::ODEX ROM [CLEANING UP]
-echo Cleaning up
+echo  Cleaning up
 if exist %~dp0tools\Settings\odexedapps.txt del /q %~dp0tools\Settings\odexedapps.txt
 if exist %~dp0tools\Settings\appsoutput.txt del /q %~dp0tools\Settings\appsoutput.txt
 if exist %~dp0tools\Settings\odexedframework.txt del /q %~dp0tools\Settings\odexedframework.txt
@@ -5723,7 +6155,7 @@ if exist %~dp0tools\odex\apps.txt del /q %~dp0tools\odex\apps.txt > NUL
 %~dp0tools\adb.exe -s %devicefinal% shell chmod -R 644 /system/app/*.*>>%~dp0tools\logs\reodexlog.log
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo Odexing complete, Your phone will now reboot.
+echo  Odexing complete, Your phone will now reboot.
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
@@ -5736,8 +6168,9 @@ cls
 set input=error
 echo.
 %~dp0tools\Apps\chgcolor %err%
-echo WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING
+echo      WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING  WARNING
 %~dp0tools\Apps\chgcolor %bg%
+echo.
 echo  ------------------------------------------------------------------------------
 echo.
 echo   Re-odexing Jar files is done on the phone in the /framework dir
@@ -5771,7 +6204,7 @@ for /F "tokens=* skip=1 delims=" %%a in (%~dp0tools\temp\adb.txt) do (
 if /I !count! LSS 2 goto reodexsinglejar
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo There are multiple devices plugged in. Which do you want to use to odex %capp%?
+echo  There are multiple devices plugged in. Which do you want to use to odex %capp%?
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 set /A count=0
@@ -5800,21 +6233,21 @@ echo %bootclass%>%~dp0tools\Settings\bootclass.txt
 if exist %~dp0tools\odex\init.rc del /q %~dp0tools\odex\init.rc > NUL
 cls
 echo.
-echo Re-Odexing %capp%
+echo  Re-Odexing %capp%
 echo.
 set odexfile=!capp:~0,-4!.odex
 set moddedodexfile=!capp:~0,-4!_modded.odex
-echo Pushing needed tools to the phone...>%~dp0tools\logs\reodexlog.log
+echo  Pushing needed tools to the phone...>%~dp0tools\logs\reodexlog.log
 echo.>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% push %~dp0tools\odex\dexopt-wrapper /system/bin/>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% push %~dp0tools\odex\zip /system/bin/>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% push %~dp0tools\odex\zipalign /system/bin/>>%~dp0tools\logs\reodexlog.log
-echo Setting permissions for new tools...>>%~dp0tools\logs\reodexlog.log
+echo  Setting permissions for new tools...>>%~dp0tools\logs\reodexlog.log
 echo.>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell chmod 755 /system/bin/dexopt-wrapper>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell chmod 755 /system/bin/zip>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell chmod 755 /system/bin/zipalign>>%~dp0tools\logs\reodexlog.log
-echo Pushing the newly compiled deodexed %capp%>>%~dp0tools\logs\reodexlog.log
+echo  Pushing the newly compiled deodexed %capp%>>%~dp0tools\logs\reodexlog.log
 echo.>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% push %~dp0done\unsigned%capp% /system/framework/%capp%
 echo %~dp0tools\adb.exe -s %devicefinal% shell dexopt-wrapper /system/framework/%capp% /system/framework/%moddedodexfile% %classpath%>>%~dp0tools\logs\reodexlog.log
@@ -5893,7 +6326,7 @@ for %%i in (%capp%) do (
 )
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo There are multiple devices plugged in. Which do you want to use to odex %capp%?
+echo  There are multiple devices plugged in. Which do you want to use to odex %capp%?
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 %~dp0tools\adb.exe devices>%~dp0tools\temp\adb.txt
@@ -5913,25 +6346,25 @@ set devicefinal=%device:~0,-7%
 																				::RE-ODEX SINGLE DEVICE APK
 :reodexsingle
 echo.
-echo Re-Odexing %capp%
+echo  Re-Odexing %capp%
 echo.
 set odexfile=!capp:~0,-4!.odex
 set moddedodexfile=!capp:~0,-4!_modded.odex
-echo Pushing needed tools to the phone...>%~dp0tools\logs\reodexlog.log
+echo  Pushing needed tools to the phone...>%~dp0tools\logs\reodexlog.log
 echo.>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% push %~dp0tools\odex\dexopt-wrapper /system/bin/>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% push %~dp0tools\odex\zip /system/bin/>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% push %~dp0tools\odex\zipalign /system/bin/>>%~dp0tools\logs\reodexlog.log
-echo Setting permissions for new tools...>>%~dp0tools\logs\reodexlog.log
+echo  Setting permissions for new tools...>>%~dp0tools\logs\reodexlog.log
 echo.>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell chmod 755 /system/bin/dexopt-wrapper>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell chmod 755 /system/bin/zip>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell chmod 755 /system/bin/zipalign>>%~dp0tools\logs\reodexlog.log
-echo Pushing the newly compiled deodexed %capp% and the original %odexfile%>>%~dp0tools\logs\reodexlog.log
+echo  Pushing the newly compiled deodexed %capp% and the original %odexfile%>>%~dp0tools\logs\reodexlog.log
 echo.>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% push %~dp0place-here-for-modding\%odexfile% /sdcard/>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% push %~dp0done\unsigned%capp% /sdcard/%capp%>>%~dp0tools\logs\reodexlog.log
-echo Running the commands:>>%~dp0tools\logs\reodexlog.log
+echo  Running the commands:>>%~dp0tools\logs\reodexlog.log
 echo.>>%~dp0tools\logs\reodexlog.log
 echo %~dp0tools\adb.exe -s %devicefinal% shell dexopt-wrapper /sdcard/%capp% /sdcard/%moddedodexfile%>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell dexopt-wrapper /sdcard/%capp% /sdcard/%moddedodexfile%>>%~dp0tools\logs\reodexlog.log
@@ -5941,17 +6374,17 @@ echo %~dp0tools\adb.exe -s %devicefinal% shell zip -d /sdcard/%capp% classes.dex
 %~dp0tools\adb.exe -s %devicefinal% shell zip -d /sdcard/%capp% classes.dex>>%~dp0tools\logs\reodexlog.log
 echo %~dp0tools\adb.exe -s %devicefinal% shell zipalign -f 4 /sdcard/%capp% /sdcard/Temp-%capp%>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell zipalign -f 4 /sdcard/%capp% /sdcard/Temp-%capp%>>%~dp0tools\logs\reodexlog.log
-echo Deleting %~dp0done\%odexfile% and %~dp0done\%capp%>>%~dp0tools\logs\reodexlog.log
+echo  Deleting %~dp0done\%odexfile% and %~dp0done\%capp%>>%~dp0tools\logs\reodexlog.log
 echo.>>%~dp0tools\logs\reodexlog.log
 del /q %~dp0done\%odexfile%
 del /q %~dp0done\%capp%
-echo Pulling finished files>>%~dp0tools\logs\reodexlog.log
+echo  Pulling finished files>>%~dp0tools\logs\reodexlog.log
 echo %~dp0tools\adb.exe -s %devicefinal% pull /sdcard/%moddedodexfile% %~dp0done\%odexfile%>>%~dp0tools\logs\reodexlog.log
 echo %~dp0tools\adb.exe -s %devicefinal% pull /sdcard/Temp-%capp% %~dp0done\%capp%>>%~dp0tools\logs\reodexlog.log
 echo.>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% pull /sdcard/%moddedodexfile% %~dp0done\%odexfile%>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% pull /sdcard/Temp-%capp% %~dp0done\%capp%>>%~dp0tools\logs\reodexlog.log
-echo Cleaning Temp files>>%~dp0tools\logs\reodexlog.log
+echo  Cleaning Temp files>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell rm -rf /sdcard/%capp%>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell rm -rf /sdcard/Temp-%capp%>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell rm -rf /sdcard/%moddedodexfile%>>%~dp0tools\logs\reodexlog.log
@@ -5962,7 +6395,7 @@ echo Cleaning Temp files>>%~dp0tools\logs\reodexlog.log
 cls
 echo. 
 %~dp0tools\Apps\chgcolor %high%
-echo Your new odexed files are located at: 
+echo  Your new odexed files are located at: 
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 echo %~dp0done\%odexfile%
@@ -5970,7 +6403,7 @@ echo %~dp0done\%capp%
 echo.
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo The deodexed version is located at: 
+echo  The deodexed version is located at: 
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 echo %~dp0done\unsigned%capp%
@@ -5982,15 +6415,18 @@ goto restart
 :reodexchoose
 cls
 echo  ------------------------------------------------------------------------------
-echo.
 %~dp0tools\Apps\chgcolor %high%
 echo  This allow you to odex a single apk file:
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  1    Odex %capp%
 echo  2    Odex Another File
 echo.
-echo 99    Go Back
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
+echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 set input=error
 set /P input=Please Make A Choice: %=%
@@ -6002,11 +6438,11 @@ goto what
 echo.
 set input=error
 %~dp0tools\Apps\chgcolor %high%
-echo What apk do you want to odex?
+echo  What apk do you want to odex?
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
-echo Example: C:\something.apk
+echo  Example: C:\something.apk
 set /P input=Type input: %=%
 copy /y %input% %~dp0place-here-for-modding > NUL
 echo %input%>%~dp0tools\odex\sigleodexinput.txt
@@ -6038,7 +6474,7 @@ for %%i in (%capp%) do (
 :reodexmultiple
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo There are multiple devices plugged in. Which do you want to use to odex %capp%?
+echo  There are multiple devices plugged in. Which do you want to use to odex %capp%?
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 %~dp0tools\adb.exe devices>%~dp0tools\temp\adb.txt
@@ -6058,24 +6494,24 @@ set devicefinal=%device:~0,-7%
 																				::ODEX SINGLE DEVICE SINGLE APK
 :reodexsingle
 echo.
-echo Odexing %capp%
+echo  Odexing %capp%
 echo.
 set odexfile=!capp:~0,-4!.odex
-echo Pushing needed tools to the phone...>%~dp0tools\logs\reodexlog.log
+echo  Pushing needed tools to the phone...>%~dp0tools\logs\reodexlog.log
 echo.>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% remount > NUL
 %~dp0tools\adb.exe -s %devicefinal% push %~dp0tools\odex\dexopt-wrapper /system/bin>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% push %~dp0tools\odex\zip /system/bin>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% push %~dp0tools\odex\zipalign /system/bin>>%~dp0tools\logs\reodexlog.log
-echo Setting permissions for new tools...>>%~dp0tools\logs\reodexlog.log
+echo  Setting permissions for new tools...>>%~dp0tools\logs\reodexlog.log
 echo.>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell chmod 755 /system/bin/dexopt-wrapper>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell chmod 755 /system/bin/zip>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell chmod 755 /system/bin/zipalign>>%~dp0tools\logs\reodexlog.log
-echo Pushing the %capp% to the phone>>%~dp0tools\logs\reodexlog.log
+echo  Pushing the %capp% to the phone>>%~dp0tools\logs\reodexlog.log
 echo.>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% push %~dp0place-here-for-modding\%capp% /sdcard/%capp%>>%~dp0tools\logs\reodexlog.log
-echo Running the commands:>>%~dp0tools\logs\reodexlog.log
+echo  Running the commands:>>%~dp0tools\logs\reodexlog.log
 echo.>>%~dp0tools\logs\reodexlog.log
 echo %~dp0tools\adb.exe -s %devicefinal% shell dexopt-wrapper /sdcard/%capp% /sdcard/%odexfile%>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell dexopt-wrapper /sdcard/%capp% /sdcard/%odexfile%>>%~dp0tools\logs\reodexlog.log
@@ -6083,7 +6519,7 @@ echo %~dp0tools\adb.exe -s %devicefinal% shell zip -d /sdcard/%capp% classes.dex
 %~dp0tools\adb.exe -s %devicefinal% shell zip -d /sdcard/%capp% classes.dex>>%~dp0tools\logs\reodexlog.log
 echo %~dp0tools\adb.exe -s %devicefinal% shell zipalign -f 4 /sdcard/%capp% /sdcard/Temp-%capp%>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell zipalign -f 4 /sdcard/%capp% /sdcard/Temp-%capp%>>%~dp0tools\logs\reodexlog.log
-echo Deleting %~dp0done\%odexfile% and %~dp0done\%capp%>>%~dp0tools\logs\reodexlog.log
+echo  Deleting %~dp0done\%odexfile% and %~dp0done\%capp%>>%~dp0tools\logs\reodexlog.log
 echo.>>%~dp0tools\logs\reodexlog.log
 if exist %~dp0done\%odexfile% del /q %~dp0done\%odexfile%
 if exist %~dp0done\%capp% del /q %~dp0done\%capp%
@@ -6093,7 +6529,7 @@ echo %~dp0tools\adb.exe -s %devicefinal% pull /sdcard/Temp-%capp% %~dp0done\%cap
 echo.>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% pull /sdcard/%odexfile% %~dp0done\%odexfile%>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% pull /sdcard/Temp-%capp% %~dp0done\%capp%>>%~dp0tools\logs\reodexlog.log
-echo Cleaning Temp files>>%~dp0tools\logs\reodexlog.log
+echo  Cleaning Temp files>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell rm -rf /sdcard/%capp%>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell rm -rf /sdcard/Temp-%capp%>>%~dp0tools\logs\reodexlog.log
 %~dp0tools\adb.exe -s %devicefinal% shell rm -rf /sdcard/%odexfile%>>%~dp0tools\logs\reodexlog.log
@@ -6103,7 +6539,7 @@ echo Cleaning Temp files>>%~dp0tools\logs\reodexlog.log
 cls
 echo. 
 %~dp0tools\Apps\chgcolor %high%
-echo Your new odexed files are located at: 
+echo  Your new odexed files are located at: 
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 echo %~dp0done\%odexfile%
@@ -6127,7 +6563,7 @@ for /F "tokens=* skip=1 delims=" %%a in (%~dp0tools\temp\adb.txt) do (
 if /I !count! LSS 2 goto decompileodexjarsingle
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo There are multiple devices plugged in. Which do you want to decompile %capp% with?
+echo  There are multiple devices plugged in. Which do you want to decompile %capp% with?
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 %~dp0tools\adb.exe devices>%~dp0tools\temp\adb.txt
@@ -6148,10 +6584,10 @@ set devicefinal=%device:~0,-7%
 :decompileodexjarsingle
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo I have noticed this is an odexed jar.
-echo I will now deodex and then decompile it for you.
+echo  I have noticed this is an odexed jar.
+echo  I will now deodex and then decompile it for you.
 echo.
-echo Please Wait...
+echo  Please Wait...
 %~dp0tools\Apps\chgcolor %bg%
 %~dp0tools\adb.exe devices>%~dp0tools\temp\adb.txt
 set /A count=0
@@ -6162,7 +6598,7 @@ for /F "tokens=* skip=1 delims=" %%a in (%~dp0tools\temp\adb.txt) do (
 	set devicefinal=!tempvar:~0,-7!
 )
 echo.
-echo Getting some needed information from your phone. 
+echo  Getting some needed information from your phone. 
 if not exist %~dp0tools\odex\originals mkdir %~dp0tools\odex\originals
 if exist %~dp0tools\odex\originals\%capp% copy  /y %~dp0tools\odex\originals\%capp% %~dp0place-here-for-modding\%capp% > NUL
 if exist %~dp0tools\odex\odex\system\framework rd /s /q %~dp0tools\odex\odex\system\framework > NUL
@@ -6176,7 +6612,7 @@ mkdir %~dp0tools\odex\deodex\system\framework > NUL
 %~dp0tools\adb.exe -s %devicefinal% pull /system/framework/ %~dp0tools\odex\odex\system\framework\ > NUL
 copy  /y %~dp0place-here-for-modding\%capp% %~dp0tools\odex\originals\%capp% > NUL
 echo.
-echo Deodexing !capp:~0,-4!.jar...
+echo  Deodexing !capp:~0,-4!.jar...
 if not exist %~dp0tools\odex\odex\out mkdir %~dp0tools\odex\odex\out > NUL
 java -jar %~dp0tools\build\baksmali.jar -a %api% -x %~dp0place-here-for-modding\!capp:~0,-4!.odex -d %~dp0tools\odex\odex\system\framework -o %~dp0tools\odex\deodex\system\app\!capp:~0,-4!
 if errorlevel 1 goto errorlog
@@ -6186,8 +6622,9 @@ copy /y %~dp0place-here-for-modding\!capp:~0,-4!.jar %~dp0tools\odex\odex\system
 %~dp0tools\Apps\7za.exe u -tzip %~dp0tools\odex\odex\system\app\!capp:~0,-4!.jar %~dp0tools\odex\odex\out\classes.dex -mx%usrc% > NUL
 echo.
 move %~dp0tools\odex\odex\system\app\!capp:~0,-4!.jar %~dp0place-here-for-modding\ > NUL
+echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
-echo Cleaning up temp files.
+echo  Cleaning up temp files.
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 if exist %~dp0tools\odex\odex\ rd /s /q %~dp0tools\odex\odex\ > NUL
@@ -6202,7 +6639,7 @@ goto errorlog
 cls
 %~dp0tools\Apps\chgcolor %err%
 echo.
-echo Batch Decompiling of odexed apks or jars is not supported yet.
+echo  Batch Decompiling of odexed apks or jars is not supported yet.
 echo.
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
@@ -6222,7 +6659,7 @@ for /F "tokens=* skip=1 delims=" %%a in (%~dp0tools\temp\adb.txt) do (
 if /I !count! LSS 2 goto decompileodexapksingle
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo There are multiple devices plugged in. Which do you want to decompile %capp% with?
+echo  There are multiple devices plugged in. Which do you want to decompile %capp% with?
 %~dp0tools\Apps\chgcolor %bg%
 echo.
 %~dp0tools\adb.exe devices>%~dp0tools\temp\adb.txt
@@ -6243,13 +6680,13 @@ set devicefinal=%device:~0,-7%
 :decompileodexapksingle
 echo.
 %~dp0tools\Apps\chgcolor %high%
-echo I have noticed this is an odexed apk.
-echo I will now deodex and then decompile it for you.
+echo  I have noticed this is an odexed apk.
+echo  I will now deodex and then decompile it for you.
 echo.
-echo Please Wait...
+echo  Please Wait...
 %~dp0tools\Apps\chgcolor %bg%
 echo.
-echo Getting some needed information from your phone.
+echo  Getting some needed information from your phone.
 if not exist %~dp0tools\odex\originals mkdir %~dp0tools\odex\originals
 if exist %~dp0tools\odex\originals\%capp% copy  /y %~dp0tools\odex\originals\%capp% %~dp0place-here-for-modding\%capp% > NUL
 if exist %~dp0tools\odex\odex\system\framework rd /s /q %~dp0tools\odex\odex\system\framework > NUL
@@ -6263,7 +6700,7 @@ mkdir %~dp0tools\odex\deodex\system\framework > NUL
 %~dp0tools\adb.exe -s %devicefinal% pull /system/framework/ %~dp0tools\odex\odex\system\framework\ > NUL
 copy  /y %~dp0place-here-for-modding\%capp% %~dp0tools\odex\originals\%capp% > NUL
 echo.
-echo Deodexing !capp:~0,-4!.apk...
+echo  Deodexing !capp:~0,-4!.apk...
 if not exist %~dp0tools\odex\odex\out mkdir %~dp0tools\odex\odex\out > NUL
 java -jar %~dp0tools\build\baksmali.jar -a %api% -x %~dp0place-here-for-modding\!capp:~0,-4!.odex -d %~dp0tools\odex\odex\system\framework -o %~dp0tools\odex\deodex\system\app\!capp:~0,-4!
 if errorlevel 1 goto errorlog
@@ -6273,8 +6710,9 @@ copy /y %~dp0place-here-for-modding\!capp:~0,-4!.apk %~dp0tools\odex\odex\system
 %~dp0tools\Apps\7za.exe u -tzip %~dp0tools\odex\odex\system\app\!capp:~0,-4!.apk "%~dp0tools\odex\odex\out\classes.dex" -mx%usrc% > NUL
 echo.
 move %~dp0tools\odex\odex\system\app\!capp:~0,-4!.apk %~dp0place-here-for-modding\ > NUL
+echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
-echo Cleaning up temp files.
+echo  Cleaning up temp files.
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 if exist %~dp0tools\odex\odex\ rd /s /q %~dp0tools\odex\odex\ > NUL
@@ -6285,40 +6723,42 @@ goto errorlog
 																				::ODEX INFORMATION
 :odexinformation
 cls 
-echo.
+echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
 echo  What is an odex file?
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
-echo   An .odex file is an optimized Dalvik executable file, sort of like an .exe in
+echo  An .odex file is an optimized Dalvik executable file, sort of like an .exe in
 echo  windows. The .odex is compressed to save space, and contains bits and pieces
 echo  of its .apk that are optimized before Android boots. This helps speed up the
 echo  boot process and pre-loads parts of the application.
 echo.
-echo.
+echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
 echo  What is a deodex file?
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo.
-echo   Deodex it is not a file extension like .odex is, rather, apps that are
+echo  Deodex it is not a file extension like .odex is, rather, apps that are
 echo  deodexed are assembled in such a way that they are not pre-optimized and the
 echo  bits that would have gone into a separate .odex file are put into classes.dex
 echo  files and kept inside the .apk. 
 echo.
+echo  ------------------------------------------------------------------------------
 echo.
 PAUSE
 goto restart
 																				::FIRST OPEN SETTINGS
 :firstopen
 cls
+echo  ------------------------------------------------------------------------------
 set input=error
-echo.
 %~dp0tools\Apps\chgcolor %high%
 echo  First Time Setup
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  This is the first time you have opened the AIO. 
 echo.
 echo  Please take a few seconds and go through the initial setup wizard 
@@ -6326,6 +6766,7 @@ echo  This will setup the AIO^'s initial settings.
 echo.
 echo  If you set something that you do not like you can change all the settings 
 echo  through the aio later as well.
+echo.
 echo  ------------------------------------------------------------------------------
 echo.
 echo  Press any key to start the setup. . .
@@ -6334,39 +6775,48 @@ set firstrun=on
 goto apkverfirstrun
 :setupdates
 cls
+echo  ------------------------------------------------------------------------------
 set input=error
 %~dp0tools\Apps\chgcolor %high%
 echo  Check for Udates?
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  Would you like the AIO to automatically check for updates?
+echo.
 echo  ------------------------------------------------------------------------------
 SET /P input=Please make your decision [y/n]:
 if %input% EQU y goto enableupdatefirstrun
 if %input% EQU n goto disableupdatefirstrun
 :firstrunbeep
 cls
+echo  ------------------------------------------------------------------------------
 set input=error
 %~dp0tools\Apps\chgcolor %high%
 echo  Enable Sounds?
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  Would you like the AIO to make noise?
+echo.
 echo  ------------------------------------------------------------------------------
 SET /P input=Please make your decision [y/n]:
 if %input% EQU y goto enablebeepfirstrun
 if %input% EQU n goto disablebeepfirstrun
 :settheme
 cls
+echo  ------------------------------------------------------------------------------
 set input=error
 %~dp0tools\Apps\chgcolor %high%
 echo  Set the AIO Colors
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  The AIO has 4 colors that you can change. 
 echo.
 echo  You can edit the main font color, the highlight color,
 echo  The disabled menu color, and the error highlight color.
+echo.
 echo  ------------------------------------------------------------------------------
 echo.
 echo  Press any key to set the theme now. . .
@@ -6375,14 +6825,16 @@ goto theme
 																				::XULTIMATE 9PATCHER
 :xultimate
 cls
-set input=error
 echo  ------------------------------------------------------------------------------
+set input=error
 %~dp0tools\Apps\chgcolor %high%
 echo  Compile .9 pngs?
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  This will compile all the .9 file inside of %~dp0dot9
 echo  Would you like to continue?
+echo.
 echo  ------------------------------------------------------------------------------
 SET /P input=Please make your decision [y/n]:
 if %input% EQU y goto patchnine
@@ -6404,13 +6856,16 @@ move %~dp0dot9\done\originals\res\drawable-hdpi\* %~dp0done\dot9\ > NUL
 rd /s /q %~dp0dot9\done\originals > NUL
 rd /s /q %~dp0dot9\done > NUL
 cls
+echo.
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
 echo  .9 pngs Compile Finished
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  Your new files are located at 
 echo  %~dp0done\dot9\
+echo.
 echo  ------------------------------------------------------------------------------
 echo.
 PAUSE
@@ -6418,14 +6873,16 @@ goto restart
 																				::COLOR EDIT
 :coloredit
 cls
-set input=error
 echo  ------------------------------------------------------------------------------
+set input=error
 %~dp0tools\Apps\chgcolor %high%
 echo  Compile .9 pngs?
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
+echo.
 echo  1    Just open Color Edit
 echo  2    Open %capp%'s colors.xml file
+echo.
 echo  ------------------------------------------------------------------------------
 SET /P input=Please make your decision:
 if %input%==1 start %~dp0tools\Apps\ColorEdit.exe

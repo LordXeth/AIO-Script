@@ -9,7 +9,7 @@ This script allows for editing those apks with a few buttons clicks. It can edit
 ![Example Image][2]
 
 Also you can find the tool & Info's also here: [Rujelus22][3],
-[Team Venum][4], and [XDA][5].
+[Team Venum][4], [XDA][5] and LordXeth [GitHub][12].
 
 
 
@@ -66,6 +66,8 @@ Developed By
 * Rujelus22 - [XDA-Profil][6]
 * Team Venum - <brkear1967@gmail.com>
 
+* LordXeth - experimental branch
+
 
 
 Downloads
@@ -78,7 +80,7 @@ Downloads
 
 
  [1]: http://www.teamvenum.com/forum/
- [2]: http://s7.directupload.net/images/130717/ftvo7epy.png
+ [2]: http://s1.directupload.net/images/130717/sdm6w33r.jpg
  [3]: http://www.rujelus22.com/evo/script.php
  [4]: http://www.teamvenum.com
  [5]: http://forum.xda-developers.com/showpost.php?p=33268038&postcount=1
@@ -88,3 +90,4 @@ Downloads
  [9]: http://developer.android.com/sdk/index.html
  [10]: http://www.oracle.com/technetwork/java/javase/downloads/index.html
  [11]: http://forum.xda-developers.com/showthread.php?t=916814
+ [12]: https://github.com/LordXeth/AIO-Script
