@@ -1,0 +1,4 @@
+backup\*
+tools\*
+eclipse\*
+eclispe-projects\*
