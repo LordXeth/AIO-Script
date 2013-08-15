@@ -54,7 +54,7 @@ if not exist %~dp0pulled\ mkdir %~dp0pulled
 if not exist %~dp0dot9\ mkdir %~dp0dot9
 cls
 echo.
-echo                          AIO Android Tool V2.0.0.3.1
+echo                          AIO Android Tool V2.0.0.3.2
 echo.
 echo.
 echo                    ........                       ........                     
@@ -4052,7 +4052,7 @@ echo  #	1    1.3.2	6    1.4.9	#		   11    2.0.0-b1    #
 echo  #	2    1.4.0	7    1.5.0	#    Apktool	   12    2.0.0-b2    #
 echo  #	3    1.4.1	8    1.5.1	#      2.0	   13    2.0.0-b3    #
 echo  #	4    1.4.2	9    1.5.2	#       b	   14    2.0.0-b4    #
-echo  #	5    1.4.3	10   1.5.3	#
+echo  #	5    1.4.3	10   1.5.3	#		   15    2.0.0-b5    #
 echo  #					#				     #
 if %firstrun% EQU on goto firstrunskip
 echo  ------------------------------------------------------------------------------
@@ -4077,6 +4077,7 @@ if %input%==11 goto version11
 if %input%==12 goto version12
 if %input%==13 goto version13
 if %input%==14 goto version14
+if %input%==15 goto version15
 if %firstrun% EQU on goto firstrunmenuskip
 if %input%==99 goto restart
 :firstrunmenuskip
@@ -4151,7 +4152,11 @@ set apktool=apktool-2.0.0b4.jar
 echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
 if %firstrun% EQU on goto setupdates
 goto restart
-																				::OPEN LOG
+:version14
+set apktool=apktool-2.0.0b5.jar
+echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
+if %firstrun% EQU on goto setupdates
+goto restart																				::OPEN LOG
 :log
 cls
 set input=error

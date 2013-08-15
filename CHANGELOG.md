@@ -1,6 +1,14 @@
-Change Log
+ChangeLog
 ===============================================================================
 
+Version 2.0.0.3.2-LX
+--------------------
+
+ * Added Updated apktool 2.0.0b5.
+ * Added Updated notepad++ 6.4.5 de/en/fr/pl/ru.
+ * Added Updated aapt.
+ * Added Updated Script
+ 
 Version 2.0.0.3.1-LX
 --------------------
 
