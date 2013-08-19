@@ -4152,7 +4152,7 @@ set apktool=apktool-2.0.0b4.jar
 echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
 if %firstrun% EQU on goto setupdates
 goto restart
-:version14
+:version15
 set apktool=apktool-2.0.0b5.jar
 echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
 if %firstrun% EQU on goto setupdates
