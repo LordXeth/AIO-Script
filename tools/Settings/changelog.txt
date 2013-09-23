@@ -1,24 +1,26 @@
- AIO-Script		v2.0.0.3.2
+ AIO-Script		v2.0.0.3.3
 
  apktool         	v1.3.2 - v1.5.2 + v1.5.3 SNAPSHOT
- apktool         	v2.0.0b1 - 2.0.0b5
+ apktool		v1.5.3 inverted (TRDS 2.0)
+ apktool         	v2.0.0b1 - 2.0.0b6
 
- baksmali/smali		v1.4.2, v2.0b1 - v2.0b5
+ baksmali/smali		v1.4.2, v2.0b1 - v2.0b6
  smali (script)		512m
 
  adb			v1.0.31
- appt			v0.2
+ appt			v0.2 + inverted (TRDS 2.0)
 
  7za			v9.22
  advpng			v1.17
  optipng		v0.7.4 HG (libpng v1.4.5)
- pngcrush		v1.7.65 32/64bit
+ pngcrush		v1.7.67 32/64bit
  roptipng		v0.6.3
- wget			v1.13.4
+ wget			v1.14
+ zlib.dll		v1.2.8
 
  Notepad++		v6.4.5 de/en/fr/pl/ru
  PRGrep			v8.12
- ColorEdit		v1.0
+ ColorEdit		v1.1
  ColorMania		v4.0		
  Md5Checker		v3.3.0.12
 
@@ -31,3 +33,6 @@
  Android Image Scaler	v1.0.0
  JD-GUI			v0.3.5
  HxD Hex Editor		v1.7.7.0
+ ColorEdit		v1.0 beta
+ VisualColorPicker	v2.6
+ 

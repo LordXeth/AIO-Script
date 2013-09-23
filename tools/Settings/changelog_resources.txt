@@ -15,7 +15,7 @@
 	 CM9	                     |   9  | [GB2.3, 2.3.1. 2.3.2]
 	 CM10	                     |   8  | [Froyo 2.2.x]
 				     |   7  | [Eclair 2.1.x]
-	 CM10.1 Nexus 4(4.2.2 Schubi)|   6  | [Eclair 2.0.1]
+	 CM10.2 Nexus 4(4.3 CyanKang)|   6  | [Eclair 2.0.1]
 				     |   5  | [Eclair 2.0]
 				     |   5  | [Eclair 2.0]
 				     |   4  | [Donut 1.6]

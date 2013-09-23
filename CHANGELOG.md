@@ -1,6 +1,21 @@
 ChangeLog
 ===============================================================================
 
+Version 2.0.0.3.3-LX
+--------------------
+
+ * Added Updated apktool 2.0.0b6.
+ * Added Updated apktool 1.5.3-inverted (TRDS 2.0).
+ * Added Updated aapt-inverted (TRDS 2.0).
+ * Added Updated Script
+ * Added Updated pngcrush 1.7.67 32/64bit.
+ * Added Updated wget v1.14.
+ * Added Updated zlib.dll v1.2.8.
+ * Added Updated ColorEdit v1.1.
+ 
+ * Added ColorEdit v1.0 beta.
+ * Added VisualColorPicker v2.6.
+
 Version 2.0.0.3.2-LX
 --------------------
 

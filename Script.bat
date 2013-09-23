@@ -54,7 +54,7 @@ if not exist %~dp0pulled\ mkdir %~dp0pulled
 if not exist %~dp0dot9\ mkdir %~dp0dot9
 cls
 echo.
-echo                          AIO Android Tool V2.0.0.3.2
+echo                          AIO Android Tool V2.0.0.3.3
 echo.
 echo.
 echo                    ........                       ........                     
@@ -606,7 +606,7 @@ echo.
 echo  If you have not installed it already I can start the download for you.
 echo.
 set /P input=Download SDK [y/n]:
-if %input% EQU y start http://dl.google.com/android/installer_r21-windows.exe
+if %input% EQU y start http://dl.google.com/android/installer_r22.2.1-windows.exe
 echo.
 goto restart
 :nojava
@@ -624,7 +624,7 @@ echo.
 echo  Would you like me to open the download page for you?
 echo.
 set /P input=Please make your decision [y/n]:
-if %input% EQU y start http://www.oracle.com/technetwork/java/javase/downloads/jdk6u37-downloads-1859587.html
+if %input% EQU y start http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html
 echo.
 exit
 																				::SET A PROJECT
@@ -3139,6 +3139,8 @@ echo  4    Open AXMLPrinterGUI
 echo  5    Open Android Image Scaler
 echo  6    Open Jd-GUI
 echo  7    Open HxD Hex Editor
+echo  8    Open VisualColorPicker
+echo  9    Open ColorEdit
 echo.
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
@@ -3154,6 +3156,8 @@ if %input% EQU 4 goto axmlprintergui
 if %input% EQU 5 goto androidimagescaler
 if %input% EQU 6 goto jdgui
 if %input% EQU 7 goto hxd
+if %input% EQU 8 goto visualcolorpicker
+if %input% EQU 9 goto coloredit
 if %input% EQU 99 goto restart
 echo.
 PAUSE
@@ -3334,7 +3338,7 @@ goto restart
 																				::ABOUT FULL CHANGELOG
 :aboutfullchangelog
 cls
-mode con:cols=80 lines=56
+mode con:cols=80 lines=58
 set input=error
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
@@ -4048,11 +4052,12 @@ echo  Which version would you like to use
 %~dp0tools\Apps\chgcolor %bg%
 echo  ------------------------------------------------------------------------------
 echo  #					#				     #
-echo  #	1    1.3.2	6    1.4.9	#		   11    2.0.0-b1    #
-echo  #	2    1.4.0	7    1.5.0	#    Apktool	   12    2.0.0-b2    #
-echo  #	3    1.4.1	8    1.5.1	#      2.0	   13    2.0.0-b3    #
-echo  #	4    1.4.2	9    1.5.2	#       b	   14    2.0.0-b4    #
-echo  #	5    1.4.3	10   1.5.3	#		   15    2.0.0-b5    #
+echo  #	1    1.3.2	7    1.5.0	#		   12    2.0.0-b1    #
+echo  #	2    1.4.0	8    1.5.1	#    		   13    2.0.0-b2    #
+echo  #	3    1.4.1	9    1.5.2	#    Apktool  	   14    2.0.0-b3    #
+echo  #	4    1.4.2	10   1.5.3	#      2.0	   15    2.0.0-b4    #
+echo  #	5    1.4.3	11   1.5.3-inv	#		   16    2.0.0-b5    #
+echo  #	6    1.4.9			#		   17    2.0.0-b6    #
 echo  #					#				     #
 if %firstrun% EQU on goto firstrunskip
 echo  ------------------------------------------------------------------------------
@@ -4078,6 +4083,8 @@ if %input%==12 goto version12
 if %input%==13 goto version13
 if %input%==14 goto version14
 if %input%==15 goto version15
+if %input%==16 goto version16
+if %input%==17 goto version17
 if %firstrun% EQU on goto firstrunmenuskip
 if %input%==99 goto restart
 :firstrunmenuskip
@@ -4133,27 +4140,37 @@ echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
 if %firstrun% EQU on goto setupdates
 goto restart
 :version11
-set apktool=apktool-2.0.0b1.jar
+set apktool=apktool-1.5.3-inv.jar
 echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
 if %firstrun% EQU on goto setupdates
 goto restart
 :version12
-set apktool=apktool-2.0.0b2.jar
+set apktool=apktool-2.0.0b1.jar
 echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
 if %firstrun% EQU on goto setupdates
 goto restart
 :version13
-set apktool=apktool-2.0.0b3.jar
+set apktool=apktool-2.0.0b2.jar
 echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
 if %firstrun% EQU on goto setupdates
 goto restart
 :version14
-set apktool=apktool-2.0.0b4.jar
+set apktool=apktool-2.0.0b3.jar
 echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
 if %firstrun% EQU on goto setupdates
 goto restart
 :version15
+set apktool=apktool-2.0.0b4.jar
+echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
+if %firstrun% EQU on goto setupdates
+goto restart
+:version16
 set apktool=apktool-2.0.0b5.jar
+echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
+if %firstrun% EQU on goto setupdates
+goto restart
+:version17
+set apktool=apktool-2.0.0b6.jar
 echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
 if %firstrun% EQU on goto setupdates
 goto restart																				::OPEN LOG
@@ -4486,7 +4503,7 @@ echo.
 echo  7    CM9
 echo  8    CM10
 echo.
-echo  9    CM10.1 Nexus 4 (Schubi)
+echo  9    CM10.2 Nexus 4 (CyanKang)
 echo.
 echo  10   MIUI
 echo.
@@ -4511,7 +4528,7 @@ if %input% EQU 5 goto evotleresource
 if %input% EQU 6 goto onexresource
 if %input% EQU 7 goto cm9resource
 if %input% EQU 8 goto cm10resource
-if %input% EQU 9 goto cm101n4schubi
+if %input% EQU 9 goto cm102cyankang
 if %input% EQU 10 goto miuiresource
 if %input% EQU 88 goto resourceinstall
 if %input% EQU 99 goto restart
@@ -4660,13 +4677,13 @@ echo  --------------------------------------------------------------------------
 echo.
 PAUSE
 goto restart
-:cm101n4schubi
+:cm102cyankang
 move %UserProfile%\apktool\framework\1.apk %~dp0\backup\1-resource-backup-%file%.apk > NUL
 move %UserProfile%\apktool\framework\2.apk %~dp0\backup\2-resource-backup-%file%.apk > NUL
 move %UserProfile%\apktool\framework\127.apk %~dp0\backup\127-resource-backup-%file%.apk > NUL
-copy %~dp0tools\resources\cm101n4schubi\1.apk %UserProfile%\apktool\framework\1.apk > NUL
-copy %~dp0tools\resources\cm101n4schubi\2.apk %UserProfile%\apktool\framework\2.apk > NUL
-copy %~dp0tools\resources\cm101n4schubi\127.apk %UserProfile%\apktool\framework\127.apk > NUL
+copy %~dp0tools\resources\cm102cyankang\1.apk %UserProfile%\apktool\framework\1.apk > NUL
+copy %~dp0tools\resources\cm102cyankang\2.apk %UserProfile%\apktool\framework\2.apk > NUL
+copy %~dp0tools\resources\cm102cyankang\127.apk %UserProfile%\apktool\framework\127.apk > NUL
 cls
 echo.
 echo  ------------------------------------------------------------------------------
@@ -4900,6 +4917,14 @@ goto restart
 																				::OPEN HXD HEX EDITOR
 :hxd
 start %~dp0tools\Apps\HxD\HxD.exe
+goto restart
+																				::OPEN VISUAL COLOR PICKER
+:visualcolorpicker
+start %~dp0tools\Apps\VisualColorPicker\ColorPicker.exe
+goto restart
+																				::OPEN COLOR EDIT
+:coloredit
+start %~dp0tools\Apps\VisualColorPicker\ColorEdit.exe
 goto restart
 																				::PHONE MENU
 :phone
