@@ -1,0 +1,2 @@
+#!/bin/bash
+java -jar "$(cygpath -wal '/bin/smali2.jar')" "$@"

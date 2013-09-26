@@ -45,6 +45,7 @@ if not exist %~dp0done\flashable\ mkdir %~dp0done\flashable
 if not exist %~dp0droid-screen\ mkdir %~dp0droid-screen
 if not exist %~dp0originals\ mkdir %~dp0originals
 if not exist %~dp0phone-info\ mkdir %~dp0phone-info
+if not exist %~dp0PlaceApksHere\ mkdir %~dp0PlaceApksHere
 if not exist %~dp0place-here-for-modding\ mkdir %~dp0place-here-for-modding
 if not exist %~dp0place-scale-images\ mkdir %~dp0place-scale-images
 if not exist %~dp0place-scale-images\res\ mkdir %~dp0place-scale-images\res
@@ -54,7 +55,7 @@ if not exist %~dp0pulled\ mkdir %~dp0pulled
 if not exist %~dp0dot9\ mkdir %~dp0dot9
 cls
 echo.
-echo                          AIO Android Tool V2.0.0.3.3
+echo                          AIO Android Tool V2.0.0.3.4
 echo.
 echo.
 echo                    ........                       ........                     
@@ -109,7 +110,7 @@ echo                                  and LordXeth
 echo.
 PAUSE
 cls
-mode con:cols=80 lines=55
+mode con:cols=80 lines=61
 if not exist %~dp0tools\Settings\firstrun.txt goto firstopen
 :afterfirstrun
 set firstrun=off
@@ -3134,13 +3135,14 @@ echo  --------------------------------------------------------------------------
 echo.
 echo  1    Open droidAtScreen
 echo  2    Open better9patch
-echo  3    Open ADB File Explorer
-echo  4    Open AXMLPrinterGUI
-echo  5    Open Android Image Scaler
-echo  6    Open Jd-GUI
-echo  7    Open HxD Hex Editor
-echo  8    Open VisualColorPicker
-echo  9    Open ColorEdit
+echo  3    Open AXMLPrinterGUI
+echo  4    Open Android Image Scaler
+echo  5    Open Jd-GUI
+echo  6    Open HxD Hex Editor
+echo  7    Open VisualColorPicker
+echo  8    Open ColorEdit
+echo.
+echo  9    Open GOptime Menu
 echo.
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
@@ -3151,13 +3153,46 @@ echo.
 set /P input=Type input: %=%
 if %input% EQU 1 goto droidatscreen
 if %input% EQU 2 goto better9patch
-if %input% EQU 3 goto adbfileexplorer
-if %input% EQU 4 goto axmlprintergui
-if %input% EQU 5 goto androidimagescaler
-if %input% EQU 6 goto jdgui
-if %input% EQU 7 goto hxd
-if %input% EQU 8 goto visualcolorpicker
-if %input% EQU 9 goto coloredit
+if %input% EQU 3 goto axmlprintergui
+if %input% EQU 4 goto androidimagescaler
+if %input% EQU 5 goto jdgui
+if %input% EQU 6 goto hxd
+if %input% EQU 7 goto visualcolorpicker
+if %input% EQU 8 goto coloredit
+if %input% EQU 9 goto goptimize
+if %input% EQU 99 goto restart
+echo.
+PAUSE
+goto restart
+																				::OPTIONS GOPTIMIZE 
+:goptimize
+cls
+set input=error
+echo  ------------------------------------------------------------------------------
+echo  Current Project: %capp%
+echo  Adb: %adbwifi% ^| Remount Available: %remountavlible% ^| Sounds: %sound2% 
+echo  Apktool:%apktool% ^| Compression Level: %usrc% ^| Mem: %heapy%mb
+echo  ------------------------------------------------------------------------------
+echo.
+echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
+echo  Options other Apps
+%~dp0tools\Apps\chgcolor %bg%
+echo  ------------------------------------------------------------------------------
+echo.
+echo  1    Open GOptimize
+echo  2    Open ManualGO
+echo.
+echo  ------------------------------------------------------------------------------
+%~dp0tools\Apps\chgcolor %high%
+echo  99   Go Back
+%~dp0tools\Apps\chgcolor %bg%
+echo  ------------------------------------------------------------------------------
+echo.
+set /P input=Type input: %=%
+if %input% EQU 1 goto autogo
+if %input% EQU 2 goto manualgo
 if %input% EQU 99 goto restart
 echo.
 PAUSE
@@ -3338,7 +3373,7 @@ goto restart
 																				::ABOUT FULL CHANGELOG
 :aboutfullchangelog
 cls
-mode con:cols=80 lines=58
+mode con:cols=80 lines=61
 set input=error
 echo  ------------------------------------------------------------------------------
 %~dp0tools\Apps\chgcolor %high%
@@ -4898,10 +4933,6 @@ goto restart
 :better9patch
 start %~dp0tools\Apps\better9patch.jar
 goto restart
-																				::OPEN ADB FILE EXPLORER
-:adbfileexplorer
-start %~dp0tools\Apps\ADBFileExplorer.exe
-goto restart
 																				::OPEN AMXL PRINTER GUI
 :amxlprintergui
 start %~dp0tools\Apps\AXMLPrinterGUI\AXMLPrinter.exe
@@ -4925,6 +4956,14 @@ goto restart
 																				::OPEN COLOR EDIT
 :coloredit
 start %~dp0tools\Apps\VisualColorPicker\ColorEdit.exe
+goto restart
+																				::OPEN AUTO GOPTIMIZE
+:autogo
+start cmd.exe /c GOptimize.cmd
+goto restart
+																				::OPEN MANUAL GOPTIMIZE
+:manualgo
+start cmd.exe /c ManualGO.cmd
 goto restart
 																				::PHONE MENU
 :phone

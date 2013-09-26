@@ -1,0 +1,32 @@
+export PATH=/bin
+export TMP=/tmp
+export TEMP=/tmp
+export tmp=/tmp
+
+rm -rf /tmp/* > /dev/null 2>&1
+
+JavaPATH="$(cat /bin/.JavaPATH 2>/dev/null | sed -ne 1p 2>/dev/null)"
+if [ "$JavaPATH" ]; then
+	JavaPATH="$(cygpath "$JavaPATH" 2>/dev/null)"
+	if [ -d "$JavaPATH" ]; then
+		export PATH="$PATH:$JavaPATH"
+		java -version > /dev/null 2>&1;
+		if [ ${?} -ne 0 ] || [ ! "$(java -version 2>&1 | grep 'java version')" ]; then
+			echo -e "\n[E] Java not properly configured\n";
+		fi
+	fi
+fi
+unset JavaPATH
+
+export TERMINFO=/bin/.terminfo
+
+export GOVersion="$(sed -n '/^GOVersion=[0-9\.]\+$/s/[^0-9\.]//gp' /bin/goptimize.sh)"
+
+# If not running interactively, don't do anything
+[[ "$-" != *i* ]] && return
+
+# Set a default prompt of: user@host and current_directory
+PS1='\[\e]0;MiniCygwin GOptimize v'"${GOVersion}"'\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$ '
+
+mkdir -m 777 -p /PlaceApksHere
+cd /PlaceApksHere;
