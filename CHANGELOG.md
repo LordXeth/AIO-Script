@@ -1,7 +1,7 @@
 ChangeLog
 ===============================================================================
 
-Version 2.0.0.3.4-LX
+Version 2.0.0.3.5-LX
 --------------------
 
  * Added Updated apktool 2.0.0b1-2.0.0b6.
@@ -23,7 +23,7 @@ Version 2.0.0.3.4-LX
  
  * Added ColorEdit v1.0 beta.
  * Added VisualColorPicker v2.6.
- * Added MiniCygwin GOptimize v1.23.
+ * Added MiniCygwin GOptimize v1.24.
  * Added AndroidImageScaler 1.0.0.
  * Added HxD Hex Editor 1.7.7.0.
  * Added JD-GUI 0.3.5.

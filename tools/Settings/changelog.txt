@@ -1,4 +1,4 @@
- AIO-Script		v2.0.0.3.4
+ AIO-Script		v2.0.0.3.5
 
  apktool         	v1.3.2 - v1.5.2 + v1.5.3 SNAPSHOT
  apktool		v1.5.3 inverted (TRDS 2.0)
@@ -35,5 +35,5 @@
  HxD Hex Editor		v1.7.7.0
  ColorEdit		v1.0 beta
  VisualColorPicker	v2.6
- MiniCygwin GOptimize	v1.23
+ MiniCygwin GOptimize	v1.24
  

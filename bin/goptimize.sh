@@ -1,6 +1,6 @@
 #!/bin/bash
 #### GOptimize by gu5t3r@XDA ####
-GOVersion=1.23
+GOVersion=1.24
 
 #### CHECK FOR BINARIES ####
 if [ ! -f /bin/.GOptimize ]; then
@@ -38,7 +38,7 @@ cat << EOF
   -d   Recompress classes.dex with CL[0-6]                    #
   -b   Remove debug info from classes.dex for API[1-17] using #
        baksmali/smali; -d[0-6] required; -d5 recommended      #
-  -s2  Use smali/baksmali v2.0b5 for removing debuging info   #
+  -s2  Use smali/baksmali v2.0b6 for removing debuging info   #
   -l   Recompress libraries with CL[0-6]                      #
   -r   Recompress APK with  CL[0-6]                           #
   -k   Keep only libraries for architecture: 1 armeabi        #
@@ -78,11 +78,12 @@ cat << EOF
   APK Recompression (-r option):                              #
       Following Android Asset Packaging Tool rules files with #
       extensions:                                             #
-       "jpg, jpeg, png, gif, wav, mp2, mp3, ogg, aac, mpg,    #
-        mpeg, mid, midi, smf, jet, rtttl, imy, xmf, mp4, m4a, #
-        m4v, 3gp, 3gpp, 3g2, 3gpp2, amr, awb, wma, wmv, zip,  #
-        lzma" will never be compressed as they are already    #
-      compressed formats or don't compress well.              #
+       "jpg, jpeg, jpe, jfif, png, gif, wav, mp2, mp3, ogg,   #
+        aac, mpg, mpeg, mid, midi, smf, jet, rtttl, imy, xmf, #
+        mp4, m4a, m4v, 3gp, 3gpp, 3g2, 3gpp2, amr, awb, wma,  #
+        wmv, zip, lzma"                                       #
+      will never be compressed as they are already compressed #
+      formats or don't compress well.                         #
       Most developers use this extensions for databases and   #
       compressing them would result in application ForceClose #
                                                               #
@@ -109,29 +110,47 @@ EOF
 }
 
 
-CL()
+CLevel()
 {
-case "$1" in
-	1) echo '4';;
-	2) echo '8';;
-	3) echo '16';;
-	4) echo '32';;
-	5) echo '64';;
-	6) echo '128';;
-	*) 
-		if [[ "$1" =~ ^fb[0-9]{1,3}$ ]]; then
-			if [ "${1#fb}" -lt 3 ]; then
-				echo '3'
-			elif [ "${1#fb}" -gt 258 ]; then
-				echo '258'
+	case "$1" in
+		1) echo '4';;
+		2) echo '8';;
+		3) echo '16';;
+		4) echo '32';;
+		5) echo '64';;
+		6) echo '128';;
+		*) 
+			if [[ "$1" =~ ^fb[0-9]{1,3}$ ]]; then
+				if [ "${1#fb}" -lt 3 ]; then
+					echo '3'
+				elif [ "${1#fb}" -gt 258 ]; then
+					echo '258'
+				else
+					echo "${1#fb}"
+				fi
 			else
-				echo "${1#fb}"
+				echo '4'
 			fi
-		else
-			echo '4'
-		fi
-	;;
-esac
+		;;
+	esac
+}
+
+COptions()
+{
+	if [ -z "$1" ] || [ "${1#fb}" -eq 0 ]; then
+		echo '-mm=Copy';
+	else
+		echo '-mm=Deflate -mfb='"$(CLevel $1)"' -mpass=16';
+	fi
+}
+
+CCheck()
+{
+	if ! [[ "$1" =~ ^[0-6]$ || "$1" =~  ^fb[0-9]{1,3}$ && "${1#fb}" -ge 3 && "${1#fb}" -le 258 ]]; then
+		return 0;
+	else
+		return 1;
+	fi
 }
 
 #### GET OPTIONS ####
@@ -159,34 +178,27 @@ do
 			;;
 		z)
 			opt_z="$OPTARG"
-			if [ -z "$opt_p" ]; then usage; exit 1; fi
-			if [ "$opt_z" != "z" ] && [ "$opt_z" != "b" ]; then usage; exit 1; fi
-			which "PNGZopfli" > /dev/null 2>&1; if [ ${?} -ne 0 ]; then usage; exit 1; fi
-			which "zopfli" > /dev/null 2>&1; if [ ${?} -ne 0 ]; then usage; exit 1; fi
+			if [ "$opt_z" = 'o' ]; then opt_z='b'; fi
+			if [ -z "$opt_p" ] || [ "$opt_z" != "z" ] && [ "$opt_z" != "b" ]; then usage; exit 1; fi
+			if ! which "PNGZopfli" &>/dev/null || ! which "zopfli" &>/dev/null; then
+				echo -e "\n[E] Missing binaries: PNGZopfli or zopfli"; exit 1;
+			fi 
 			;;
 		a)
 			opt_a="$OPTARG"
-			if ! [[ "$opt_a" =~ ^[0-6]$ || "$opt_a" =~  ^fb[0-9]{1,3}$ ]]; then
-				usage; exit 1;
-			fi
+			if CCheck "$opt_a"; then usage; exit 1; fi
 			;;
 		r)
 			opt_r="$OPTARG"
-			if ! [[ "$opt_r" =~ ^[0-6]$ || "$opt_r" =~  ^fb[0-9]{1,3}$ ]]; then
-				usage; exit 1;
-			fi
+			if CCheck "$opt_r"; then usage; exit 1; fi
 			;;
 		l)
 			opt_l="$OPTARG"
-			if ! [[ "$opt_l" =~ ^[0-6]$ || "$opt_l" =~  ^fb[0-9]{1,3}$ ]]; then
-				usage; exit 1;
-			fi
+			if CCheck "$opt_l"; then usage; exit 1; fi
 			;;
 		d)
 			opt_d="$OPTARG"
-			if ! [[ "$opt_d" =~ ^[0-6]$ || "$opt_d" =~  ^fb[0-9]{1,3}$ ]]; then
-				usage; exit 1;
-			fi
+			if CCheck "$opt_d"; then usage; exit 1; fi
 			;;
 		k)
 			opt_k="$OPTARG"
@@ -220,6 +232,7 @@ do
 			opt_t=1;
 			;;
 		j)
+			if ! which "jpegoptim" &>/dev/null; then echo -e "\n[E] Missing binaries: jpegoptim"; exit 1; fi
 			opt_j="$OPTARG"
 			if ! [[ "$opt_j" =~ ^[0-9]*$ ]] || [[ $opt_j -ne 0 && $opt_j -lt 75 || $opt_j -gt 100 ]]; then
 				usage; exit 1;
@@ -293,7 +306,7 @@ GOptimize()
 			if [ "$opt_a" ]; then 7za x -ssc- -y -i\!resources.arsc -o".go[${APK%.*}]" "$APK" > /dev/null; fi
 			if [ "$opt_d" ]; then 7za x -ssc- -y -i\!classes.dex -o".go[${APK%.*}]" "$APK" > /dev/null; fi
 			if [ "$opt_l" ]; then 7za x -ssc- -y -i\!lib -o".go[${APK%.*}]" "$APK" > /dev/null; fi
-			if [ "$opt_j" ]; then 7za x -ssc- -y -ir\!*.jpg -ir\!*.jpeg -o".go[${APK%.*}]" "$APK" > /dev/null; fi
+			if [ "$opt_j" ]; then 7za x -ssc- -y -ir\!*.jpg -ir\!*.jpeg -ir\!*.jpe -ir\!*.jfif -o".go[${APK%.*}]" "$APK" > /dev/null; fi
 			cd ".go[${APK%.*}]"
 			chmod -R 777 * &>/dev/null
 		fi
@@ -360,7 +373,7 @@ GOptimize()
 
 		#### OPTIMIZE JPG'S ####
 		if [ "$opt_j" ]; then
-			JPGLIST="`find . -type f \( -iname '*.jpg' -or -iname '*.jpeg' \)`"
+			JPGLIST="`find . -type f \( -iname '*.jpg' -or -iname '*.jpeg' -or -iname '*.jpe' -or -iname '*.jfif' \)`"
 			if [ -z "$JPGLIST" ]; then
 				echo -e " |- NO JPG's in APK detected"
 			else
@@ -383,7 +396,7 @@ GOptimize()
 				let size_before+=0; if [ "$size_before" -eq 0 ]; then size_before=1; size_after=1; fi
 				echo -e "\r |- Optimized JPG's: 100% | Saved: $((($size_before-$size_after)/1024)) kB ($((($size_before-$size_after)*100/$size_before))%)"
 				#echo " |- Packing JPG's in APK..."
-				7za a -tzip -mm=Copy -ssc- -y -ir\!*.jpg -ir\!*.jpeg "../$APK" > /dev/null
+				7za a -tzip -mm=Copy -ssc- -y -ir\!*.jpg -ir\!*.jpeg -ir\!*.jpe -ir\!*.jfif "../$APK" > /dev/null
 			fi
 			unset JPGLIST JPG size_before size_after;
 		fi
@@ -393,12 +406,11 @@ GOptimize()
 		if [ "$opt_a" ]; then
 			if [ -f "resources.arsc" ]; then
 				if [ "${opt_a#fb}" -eq 0 ]; then
-					echo " |- Storing resources.arsc uncompressed"
-					7za a -tzip -mm=Copy -ssc- -y "../$APK" "resources.arsc" > /dev/null
+					echo " |- Storing resources.arsc uncompressed";
 				else
-					echo " |- Recompressing resources.arsc with CL($opt_a)"
-					7za a -tzip -mm=Deflate -mfb=$(CL ${opt_a}) -mpass=16 -ssc- -y "../$APK" "resources.arsc" > /dev/null
+					echo " |- Recompressing resources.arsc with CL($opt_a)";
 				fi
+				7za a -tzip $(COptions $opt_a) -ssc- -y "../$APK" "resources.arsc" > /dev/null
 			else
 				echo " |- NO resources.arsc in APK detected"
 			fi
@@ -429,12 +441,11 @@ GOptimize()
 				fi
 			
 				if [ "${opt_d#fb}" -eq 0 ]; then
-					echo " |- Storing classes.dex uncompressed"
-					7za a -tzip -mm=Copy -ssc- -y "../$APK" "classes.dex" > /dev/null
+					echo " |- Storing classes.dex uncompressed";
 				else
-					echo " |- Recompressing classes.dex with CL($opt_d)"
-					7za a -tzip -mm=Deflate -mfb=$(CL ${opt_d}) -mpass=16 -ssc- -y "../$APK" "classes.dex" > /dev/null
+					echo " |- Recompressing classes.dex with CL($opt_d)";
 				fi
+				7za a -tzip $(COptions $opt_d) -ssc- -y "../$APK" "classes.dex" > /dev/null
 			else
 				echo " |- NO classes.dex in APK detected"
 			fi
@@ -444,12 +455,11 @@ GOptimize()
 		if [ "$opt_l" ]; then
 			if [ -d "lib" ]; then
 				if [ "${opt_l#fb}" -eq 0 ]; then
-					echo " |- Storing libraries uncompressed"
-					7za a -tzip -mm=Copy -ssc- -y -i\!lib/*/*.* "../$APK" > /dev/null
+					echo " |- Storing libraries uncompressed";
 				else
-					echo " |- Recompressing libraries with CL($opt_l)"
-					7za a -tzip -mm=Deflate -mfb=$(CL ${opt_l}) -mpass=16 -ssc- -y -i\!lib/*/*.* "../$APK" > /dev/null
+					echo " |- Recompressing libraries with CL($opt_l)";
 				fi
+				7za a -tzip $(COptions $opt_l) -ssc- -y -i\!lib/*/*.* "../$APK" > /dev/null
 			else
 				echo " |- NO libraries in APK detected"
 			fi
@@ -462,20 +472,15 @@ GOptimize()
 			if [ "$opt_d" ]; then classes_dex='-x!classes.dex'; else classes_dex=''; fi
 			if [ "$opt_l" ]; then libraries='-x!lib'; else libraries=''; fi
 			if [ "$opt_p" ]; then png_files=''; else png_files='-ir!*.png'; fi
-			if [ "$opt_j" ]; then jpg_files=''; else jpg_files='-ir!*.jpg -ir!*.jpeg'; fi
+			if [ "$opt_j" ]; then jpg_files=''; else jpg_files='-ir!*.jpg -ir!*.jpeg -ir!*.jpe -ir!*.jfif'; fi
 			
 			r_copy_list='9.png gif wav mp2 mp3 ogg aac mpg mpeg mid midi smf jet rtttl imy xmf mp4 m4a m4v 3gp 3gpp 3g2 3gpp2 amr awb wma wmv zip lzma';
 			
 			x_copy_list=' '; i_copy_list=' ';
 			for ext in ${r_copy_list}; do x_copy_list="${x_copy_list}"'-xr!*.'"${ext} "; i_copy_list="${i_copy_list}"'-ir!*.'"${ext} "; done
-			
-			if [ "${opt_r#fb}" -eq 0 ]; then
-				7za a -tzip -mm=Copy -ssc- -y -ir\!*.* ${resources_arsc} ${classes_dex} ${libraries} -xr\!*.png -xr\!*.jpg -xr\!*.jpeg ${x_copy_list} "../$APK" > /dev/null
-			else
-				7za a -tzip -mm=Deflate -mfb=$(CL ${opt_r}) -mpass=16 -ssc- -y -ir\!*.* ${resources_arsc} ${classes_dex} ${libraries} -xr\!*.png -xr\!*.jpg -xr\!*.jpeg ${x_copy_list} "../$APK" > /dev/null
-			fi
+			find '.' -type f -not -iname '*.*' | sed -n 's#^\./##p' | xargs -I '{}' 7za a -tzip $(COptions $opt_r) -ssc- -y "../$APK" "{}" > /dev/null
+			7za a -tzip $(COptions $opt_r) -ssc- -y -ir\!*.* ${resources_arsc} ${classes_dex} ${libraries} -xr\!*.png -xr\!*.jpg -xr\!*.jpeg -xr\!*.jpe -xr\!*.jfif ${x_copy_list} "../$APK" > /dev/null
 			7za a -tzip -mm=Copy -ssc- -y ${i_copy_list} ${png_files} ${jpg_files} "../$APK" > /dev/null
-			
 			unset -v i_copy_list x_copy_list r_copy_list
 		fi
 
