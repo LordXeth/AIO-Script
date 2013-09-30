@@ -1,6 +1,6 @@
 #!/bin/bash
 #### GOptimize by gu5t3r@XDA ####
-GOVersion=1.24
+GOVersion=1.25
 
 #### CHECK FOR BINARIES ####
 if [ ! -f /bin/.GOptimize ]; then
@@ -36,11 +36,12 @@ cat << EOF
   -j   Optimize JPG's using jpegoptim; [0] or [75-100]        #
   -a   Recompress resources.arsc with CL[0-6]                 #
   -d   Recompress classes.dex with CL[0-6]                    #
-  -b   Remove debug info from classes.dex for API[1-17] using #
+  -b   Remove debug info from classes.dex for API[1-19] using #
        baksmali/smali; -d[0-6] required; -d5 recommended      #
-  -s2  Use smali/baksmali v2.0b6 for removing debuging info   #
+  -s   [1,2] Force smali v1 or v2 when removing debug info    #
   -l   Recompress libraries with CL[0-6]                      #
   -r   Recompress APK with  CL[0-6]                           #
+  -R   [+,-] Smart Recompression modes, read extra help...    #
   -k   Keep only libraries for architecture: 1 armeabi        #
                                              2 armeabi-v7a    #
                                              3 mips           #
@@ -57,7 +58,7 @@ cat << EOF
                          Extra Help                           #
 --------------------------------------------------------------#
   Compression Levels:                                         #
-      Script always uses 16 passes for compression which      #
+      Script always uses 11 passes for compression which      #
       guarantees maximum compression and does not impact      #
       decompression time. Script CL differ in fast bytes.     #
           CL(1) <=>   4 fb        CL(4) <=>  32 fb            #
@@ -76,16 +77,26 @@ cat << EOF
           ones and do lossless optimization on other jpg's.   #
                                                               #
   APK Recompression (-r option):                              #
-      Following Android Asset Packaging Tool rules files with #
-      extensions:                                             #
-       "jpg, jpeg, jpe, jfif, png, gif, wav, mp2, mp3, ogg,   #
-        aac, mpg, mpeg, mid, midi, smf, jet, rtttl, imy, xmf, #
-        mp4, m4a, m4v, 3gp, 3gpp, 3g2, 3gpp2, amr, awb, wma,  #
-        wmv, zip, lzma"                                       #
-      will never be compressed as they are already compressed #
-      formats or don't compress well.                         #
-      Most developers use this extensions for databases and   #
-      compressing them would result in application ForceClose #
+      As of v1.25 script uses Smart Recompressing i.e. it     #
+      will leave files uncompressed in GOptimized apk that    #
+      were uncompressed in original apk which is the best way #
+      for recompressing.                                      #
+      -R+ Script will use Smart Recompression plus it will    #
+          never compress file formats from below list even if #
+          they were compressed in original apk.               #
+      -R- Script will disable Smart Recompress and store      #
+          file formats uncompressed only if they are on below #
+          list.                                               #
+      Following Android Asset Packaging Tool rules following  #
+      list of file formats:                                   #
+       "jpg jpeg jpe jfif png gif wav mp2 mp3 ogg aac mpg     #
+        mpeg mid midi smf jet rtttl imy xmf mp4 m4a m4v 3gp   #
+        3gp 3gpp 3g2 3gpp2 amr awb wma wmv zip lzma xz 7z lua #
+        pxp resS gltxt geo apf zi_"                           #
+      should never be compressed as they are already          #
+      compressed formats or don't compress well.              #
+      Most developers use this file formats for databases and #
+      compressing them would result with application errors.  #
                                                               #
   APK signing with Android test certificate                   #
       Non system apk's and apk's you want to install after    #
@@ -138,9 +149,9 @@ CLevel()
 COptions()
 {
 	if [ -z "$1" ] || [ "${1#fb}" -eq 0 ]; then
-		echo '-mm=Copy';
+		echo 'a -tzip -mm=Copy -w.. -ssc- -y';
 	else
-		echo '-mm=Deflate -mfb='"$(CLevel $1)"' -mpass=16';
+		echo 'a -tzip -mm=Deflate -mx=9 -mfb='"$(CLevel $1)"' -mpass=11 -w.. -ssc- -y';
 	fi
 }
 
@@ -154,8 +165,8 @@ CCheck()
 }
 
 #### GET OPTIONS ####
-unset -v opt_h opt_p opt_m opt_z opt_a opt_r opt_l opt_d opt_k opt_b opt_s opt_t opt_j SMALI BAKSMALI;
-while getopts “h:pm:a:r:l:d:b:k:z:s:tj:” OPTION 2>/dev/null
+unset -v opt_h opt_p opt_m opt_z opt_a opt_r opt_l opt_d opt_k opt_b opt_s opt_t opt_j opt_R SMALI;
+while getopts “h:pm:a:r:l:d:b:k:z:s:tj:R:” OPTION 2>/dev/null
 do
 	case $OPTION in
 		h)
@@ -208,33 +219,33 @@ do
 			;;
 		b)
 			opt_b="$OPTARG"
-			if [[ ! "$opt_b" =~ ^[1-9]$ && ! "$opt_b" =~ ^1[0-7]$ || ! "$opt_d" ]]; then
+			if [[ ! "$opt_b" =~ ^[1-9]$ && ! "$opt_b" =~ ^1[0-9]$ || ! "$opt_d" ]]; then
 				usage; exit 1;
 			fi
-			if [ -z "$SMALI" ] || [ -z "$BAKSMALI" ]; then
-				SMALI="smali";
-				BAKSMALI="baksmali";
-			fi
+			if [ -z "$SMALI" ]; then SMALI="smali"; fi
+			if [ -z "$opt_s" ]; then opt_s='a'; fi
 			;;
 		s)
 			opt_s="$OPTARG"
-			if [ -n "$opt_b" ] && [ "$opt_s" = "2" ] ; then
-				SMALI="smali2";
-				BAKSMALI="baksmali2";
-			elif [ -n "$opt_b" ] && [ "$opt_s" = "1" ]; then
-				SMALI="smali";
-				BAKSMALI="baksmali";
-			else
-				usage; exit 1;
-			fi
+			case "$opt_s" in
+				1) SMALI_LIST='smali';;
+				2) SMALI_LIST='smali2';;
+				*) usage; exit 1;;
+			esac
 			;;
 		t)
 			opt_t=1;
 			;;
 		j)
 			if ! which "jpegoptim" &>/dev/null; then echo -e "\n[E] Missing binaries: jpegoptim"; exit 1; fi
-			opt_j="$OPTARG"
+			opt_j="$OPTARG";
 			if ! [[ "$opt_j" =~ ^[0-9]*$ ]] || [[ $opt_j -ne 0 && $opt_j -lt 75 || $opt_j -gt 100 ]]; then
+				usage; exit 1;
+			fi
+			;;
+		R)
+			opt_R="$OPTARG";
+			if [ "$opt_R" != '-' ] && [ "$opt_R" != '+' ] || [ -z "$opt_r" ]; then
 				usage; exit 1;
 			fi
 			;;
@@ -289,26 +300,31 @@ GOptimize()
 		fi
 		echo "[+] GOptimizing: <[ $APK ]>"
 		GOCHECK="`7za l -tzip "$APK" 2>/dev/null | sed -n 's/^[ \t]\+[0-9]\+[ \t]\+[0-9]\+[ \t]\+\([0-9]\+\)[ \t].*[ \t]\([0-9]\+\)[ \t].*/\1_\2/gp'`"
-
+		
+		if [ -d ".go[${APK%.*}]" ]; then rm -rf ".go[${APK%.*}]" 2>/dev/null; fi
+		mkdir -m 777 -p ".go[${APK%.*}]/GOApk";
+		cd ".go[${APK%.*}]"
+		GOTemp_zip='GOTemp.zip';
+		cp -f "../$APK" "GOTemp.zip";
+		if [ $? -ne 0 ]; then echo -e '\n[E] File operation errors!!!'; exit 1; fi
+		
 		#### EXTRACT IF NEEDED ####
-		if [ "$opt_r" ]; then
+		if [ "$opt_r" ] || [ "$opt_p" ] || [ "$opt_a" ] || [ "$opt_d" ] || [ "$opt_l" ] || [ "$opt_j" ]; then
 			echo " |- Extracting APK..."
-			rm -rf ".go[${APK%.*}]" 2>/dev/null
-			mkdir -m 777 -p ".go[${APK%.*}]"
-			7za x -ssc- -y -xr\!META-INF -xr\!AndroidManifest.xml -o".go[${APK%.*}]" "$APK" > /dev/null
-			cd ".go[${APK%.*}]"
-			chmod -R 777 *
-		elif [ "$opt_p" ] || [ "$opt_a" ] || [ "$opt_d" ] || [ "$opt_l" ] || [ "$opt_j" ]; then
-			echo " |- Extracting APK..."
-			rm -rf ".go[${APK%.*}]" 2>/dev/null
-			mkdir -m 777 -p ".go[${APK%.*}]"
-			if [ "$opt_p" ]; then 7za x -ssc- -y -ir\!*.png -xr\!*.9.png -o".go[${APK%.*}]" "$APK" > /dev/null; fi
-			if [ "$opt_a" ]; then 7za x -ssc- -y -i\!resources.arsc -o".go[${APK%.*}]" "$APK" > /dev/null; fi
-			if [ "$opt_d" ]; then 7za x -ssc- -y -i\!classes.dex -o".go[${APK%.*}]" "$APK" > /dev/null; fi
-			if [ "$opt_l" ]; then 7za x -ssc- -y -i\!lib -o".go[${APK%.*}]" "$APK" > /dev/null; fi
-			if [ "$opt_j" ]; then 7za x -ssc- -y -ir\!*.jpg -ir\!*.jpeg -ir\!*.jpe -ir\!*.jfif -o".go[${APK%.*}]" "$APK" > /dev/null; fi
-			cd ".go[${APK%.*}]"
-			chmod -R 777 * &>/dev/null
+			cd "GOApk";
+			if [ "$opt_r" ]; then
+				7za x -ssc- -y -xr\!META-INF -xr\!AndroidManifest.xml "../GOTemp.zip" > /dev/null
+			else
+				if [ "$opt_p" ]; then 7za x -ssc- -y -ir\!*.png -xr\!*.9.png "../GOTemp.zip" > /dev/null; fi
+				if [ "$opt_a" ]; then 7za x -ssc- -y -i\!resources.arsc "../GOTemp.zip" > /dev/null; fi
+				if [ "$opt_d" ]; then 7za x -ssc- -y -i\!classes.dex "../GOTemp.zip" > /dev/null; fi
+				if [ "$opt_l" ]; then 7za x -ssc- -y -i\!lib "../GOTemp.zip" > /dev/null; fi
+				if [ "$opt_j" ]; then 7za x -ssc- -y -ir\!*.jpg -ir\!*.jpeg -ir\!*.jpe -ir\!*.jfif "../GOTemp.zip" > /dev/null; fi
+			fi
+			chmod -R 777 '.'
+			Apk_Was_Extracted='1';
+		else
+			Apk_Was_Extracted='';
 		fi
 
 
@@ -365,7 +381,7 @@ GOptimize()
 				let size_before+=0; if [ "$size_before" -eq 0 ]; then size_before=1; size_after=1; fi
 				echo -e "\r |- Optimized PNG's: 100% | Saved: $((($size_before-$size_after)/1024)) kB ($((($size_before-$size_after)*100/$size_before))%)"
 				#echo " |- Packing PNG's in APK..."
-				7za a -tzip -mm=Copy -ssc- -y -ir\!*.png -xr\!*.9.png "../$APK" > /dev/null
+				7za $(COptions) -ir\!*.png -xr\!*.9.png "../GOTemp.zip" > /dev/null
 			fi
 			unset PNGLIST PNG size_before size_after;
 		fi
@@ -396,7 +412,7 @@ GOptimize()
 				let size_before+=0; if [ "$size_before" -eq 0 ]; then size_before=1; size_after=1; fi
 				echo -e "\r |- Optimized JPG's: 100% | Saved: $((($size_before-$size_after)/1024)) kB ($((($size_before-$size_after)*100/$size_before))%)"
 				#echo " |- Packing JPG's in APK..."
-				7za a -tzip -mm=Copy -ssc- -y -ir\!*.jpg -ir\!*.jpeg -ir\!*.jpe -ir\!*.jfif "../$APK" > /dev/null
+				7za $(COptions) -ir\!*.jpg -ir\!*.jpeg -ir\!*.jpe -ir\!*.jfif "../GOTemp.zip" > /dev/null
 			fi
 			unset JPGLIST JPG size_before size_after;
 		fi
@@ -410,7 +426,7 @@ GOptimize()
 				else
 					echo " |- Recompressing resources.arsc with CL($opt_a)";
 				fi
-				7za a -tzip $(COptions $opt_a) -ssc- -y "../$APK" "resources.arsc" > /dev/null
+				7za $(COptions $opt_a) "../GOTemp.zip" "resources.arsc" > /dev/null
 			else
 				echo " |- NO resources.arsc in APK detected"
 			fi
@@ -420,23 +436,43 @@ GOptimize()
 		if [ "$opt_d" ]; then
 			if [ -f "classes.dex" ]; then
 				if [ "$opt_b" ]; then
-					echo " |- Removing debugging info from classes.dex using ${SMALI}"
-					unset RDIF; java -version > /dev/null 2>&1;
-					if [ ${?} -eq 0 ] && [ "$(java -version 2>&1) | grep 'java version')" ] &&  [ -f /bin/$BAKSMALI ] && [ -f /bin/$SMALI ] &&  [ -f /bin/${BAKSMALI}.jar ] && [ -f /bin/${SMALI}.jar ]; then
-						if [ ! "$($BAKSMALI -x -b -a${opt_b} -o .smali classes.dex 2>&1)" ]; then
-							if [ "$($SMALI -a${opt_b} -o classesGO.dex .smali 2>&1)" ]; then RDIF=1; fi
-						else
-							RDIF=1;
-						fi
-						if [ -d ".smali" ]; then rm -rf .smali; fi
-						if [ "$RDIF" ]; then
-							echo "[w] Failed Removing debugging info..."
-							if [ -f "classesGO.dex" ]; then rm -f classesGO.dex; fi
-						else
-							rm -f classes.dex; mv -f classesGO.dex classes.dex
-						fi
+					if java -version &>/dev/null && [ "$(java -version 2>&1) | grep 'java version')" ]; then
+					
+						if [ -z "$SMALI_LIST" ]; then SMALI_LIST='smali smali2 smali'; fi
+						
+						j=0; for SMALI in $SMALI_LIST; do let j++; done
+						
+						i=0;
+						for SMALI in $SMALI_LIST; do
+							if [ -d "../smali" ]; then rm -rf ../smali; fi
+							if [ $i -eq 0 ]; then
+								echo -n " |- Removing debug info using smali v$($SMALI --version | awk '{ if (NR == 1) print $2}'): "
+							else
+								echo -n " |  +- Trying to remove using smali v$($SMALI --version | awk '{ if (NR == 1) print $2}'): "
+							fi
+							if [ -f /bin/bak$SMALI ] && [ -f /bin/$SMALI ] &&  [ -f /bin/bak${SMALI}.jar ] && [ -f /bin/${SMALI}.jar ] \
+							  && [ ! "$(bak$SMALI -x -b -a${opt_b} -o ../smali classes.dex 2>&1)" ] && [ ! "$($SMALI -a${opt_b} -o ../GOclass.dex ../smali 2>&1)" ]; then
+								if [ "$(stat -c%s "../GOclass.dex")" -lt "$(stat -c%s "classes.dex")" ]; then
+									rm -f classes.dex; mv -f ../GOclass.dex classes.dex;
+									echo 'Success!';
+									if [ $i -ne 0 ]; then continue $(($j-$i-1)); fi; break;
+								else
+									echo 'Already removed!';
+									if [ -f "../GOclass.dex" ]; then rm -f ../GOclass.dex; fi
+									break;
+								fi
+							else
+								echo -n 'Failed!'; echo -e '\r[w]';
+								if [ -f "../GOclass.dex" ]; then rm -f ../GOclass.dex; fi
+								let i++;
+								if [ $(($i+1)) -ge $j ]; then break; fi
+							fi
+						done
+						if [ -d "../smali" ]; then rm -rf ../smali; fi
+						
+						
 					else
-						echo "[E] Failed: Java not properly configured"
+						echo "[E] Removing debugging info FAILED: Java not properly configured"
 					fi
 				fi
 			
@@ -445,7 +481,7 @@ GOptimize()
 				else
 					echo " |- Recompressing classes.dex with CL($opt_d)";
 				fi
-				7za a -tzip $(COptions $opt_d) -ssc- -y "../$APK" "classes.dex" > /dev/null
+				7za $(COptions $opt_d) "../GOTemp.zip" "classes.dex" > /dev/null
 			else
 				echo " |- NO classes.dex in APK detected"
 			fi
@@ -459,7 +495,7 @@ GOptimize()
 				else
 					echo " |- Recompressing libraries with CL($opt_l)";
 				fi
-				7za a -tzip $(COptions $opt_l) -ssc- -y -i\!lib/*/*.* "../$APK" > /dev/null
+				7za $(COptions $opt_l) -i\!lib/*/*.* "../GOTemp.zip" > /dev/null
 			else
 				echo " |- NO libraries in APK detected"
 			fi
@@ -474,30 +510,36 @@ GOptimize()
 			if [ "$opt_p" ]; then png_files=''; else png_files='-ir!*.png'; fi
 			if [ "$opt_j" ]; then jpg_files=''; else jpg_files='-ir!*.jpg -ir!*.jpeg -ir!*.jpe -ir!*.jfif'; fi
 			
-			r_copy_list='9.png gif wav mp2 mp3 ogg aac mpg mpeg mid midi smf jet rtttl imy xmf mp4 m4a m4v 3gp 3gpp 3g2 3gpp2 amr awb wma wmv zip lzma';
-			
 			x_copy_list=' '; i_copy_list=' ';
-			for ext in ${r_copy_list}; do x_copy_list="${x_copy_list}"'-xr!*.'"${ext} "; i_copy_list="${i_copy_list}"'-ir!*.'"${ext} "; done
-			find '.' -type f -not -iname '*.*' | sed -n 's#^\./##p' | xargs -I '{}' 7za a -tzip $(COptions $opt_r) -ssc- -y "../$APK" "{}" > /dev/null
-			7za a -tzip $(COptions $opt_r) -ssc- -y -ir\!*.* ${resources_arsc} ${classes_dex} ${libraries} -xr\!*.png -xr\!*.jpg -xr\!*.jpeg -xr\!*.jpe -xr\!*.jfif ${x_copy_list} "../$APK" > /dev/null
-			7za a -tzip -mm=Copy -ssc- -y ${i_copy_list} ${png_files} ${jpg_files} "../$APK" > /dev/null
-			unset -v i_copy_list x_copy_list r_copy_list
+			if [ "$opt_R" = "-" ] || [ "$opt_R" = "+" ]; then
+				r_copy_list='9.png gif wav mp2 mp3 ogg aac mpg mpeg mid midi smf jet rtttl imy xmf mp4 m4a m4v 3gp 3gpp 3g2 3gpp2 amr awb wma wmv zip lzma xz 7z lua pxp resS gltxt geo apf zi_';
+				for ext in ${r_copy_list}; do x_copy_list="${x_copy_list}"'-xr!*.'"${ext} "; i_copy_list="${i_copy_list}"'-ir!*.'"${ext} "; done
+			fi
+			store_list='';
+			if [ -z "$opt_R" ] || [ "$opt_R" = "+" ]; then
+				7za l "../GOTemp.zip" | sed -ne 's/.*[ \t]\+\([0-9]\+\)[ \t]\+\([0-9]\+\)[ \t]\+/\1|\2|/p' | awk -F '|' 'BEGIN{IGNORECASE = 1} { if ( $1 == $2 && $2 != 0 && $3 !~ /.*\.(png|jpg|jpeg|jpe|jfif)/ ) print $3 }' > ../store_list
+				if [ -s '../store_list' ]; then store_list='-x@../store_list'; fi
+			fi
+			
+			find '.' -type f -not -iname '*.*' | sed -n 's#^\./##p' > ../noex_list
+			if [ -s '../noex_list' ]; then noex_list='-i@../noex_list'; else noex_list=''; fi
+			
+			nice -n19 7za $(COptions $opt_r) -ir\!*.* ${noex_list} ${resources_arsc} ${classes_dex} ${libraries} ${store_list} -xr\!*.png -xr\!*.jpg -xr\!*.jpeg -xr\!*.jpe -xr\!*.jfif ${x_copy_list} "../GOTemp.zip" > /dev/null
+			7za $(COptions) ${i_copy_list} ${png_files} ${jpg_files} "../GOTemp.zip" > /dev/null
+			unset -v i_copy_list x_copy_list r_copy_list store_list
 		fi
 
-		#### Remove ".go[${APK%.*}]" dir ####
-		if [ "$opt_p" ] || [ "$opt_a" ] || [ "$opt_r" ] || [ "$opt_d" ] || [ "$opt_l" ] || [ "$opt_j" ]; then
-			cd ..
-			rm -rf ".go[${APK%.*}]" 2>/dev/null
-		fi
+
+		if [ "$Apk_Was_Extracted" ]; then cd '..'; fi
 
 		#### Check All Files Are In APK####
-		if [ "$GOCHECK" != "`7za l -tzip "$APK" 2>/dev/null | sed -n 's/^[ \t]\+[0-9]\+[ \t]\+[0-9]\+[ \t]\+\([0-9]\+\)[ \t].*[ \t]\([0-9]\+\)[ \t].*/\1_\2/gp'`" ]; then
+		if [ "$GOCHECK" != "`7za l -tzip "GOTemp.zip" 2>/dev/null | sed -n 's/^[ \t]\+[0-9]\+[ \t]\+[0-9]\+[ \t]\+\([0-9]\+\)[ \t].*[ \t]\([0-9]\+\)[ \t].*/\1_\2/gp'`" ]; then
 			echo "[E] <[ $APK ]> CORRUPTED during GOptimization"'!!!'
 		fi
 
 		#### KEEP ONLY SELECTED LIBRARIES ####
 		if [ "$opt_k" ]; then
-			lib_test="`7za l -i\!lib/* "$APK" | sed -n 's#^.*[\t ]lib/\([[:alnum:]-]\+\)/.*$#\1#gp' |  awk '!x[$0]++'`";
+			lib_test="`7za l -i\!lib/* "GOTemp.zip" | sed -n 's#^.*[\t ]lib/\([[:alnum:]-]\+\)/.*$#\1#gp' |  awk '!x[$0]++'`";
 			
 			case "$opt_k" in
 				1)
@@ -526,7 +568,7 @@ GOptimize()
 			lib_remove="`echo "${lib_test}" | grep -xv "${lib_keep}"`"
 			if [ -n "$lib_remove" ]; then
 				echo -n " |- Removing libraries for: "; echo -n "$lib_remove" | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/, /g'; echo "";
-				7za d -tzip -i\!"lib/*" -x\!"lib/${lib_keep}/*" "$APK" > /dev/null
+				7za d -tzip -i\!"lib/*" -x\!"lib/${lib_keep}/*" "GOTemp.zip" > /dev/null
 			else
 				echo " |- NO libraries to remove..."
 			fi
@@ -540,7 +582,7 @@ GOptimize()
 			echo " |- Signing APK with Android test certificate"
 			java -version > /dev/null 2>&1;
 			if [ ${?} -eq 0 ] && [ "$(java -version 2>&1) | grep 'java version')" ] &&  [ -f /bin/sign ] && [ -f /bin/sign.jar ]; then
-				sign --override "$APK"
+				sign --override "GOTemp.zip"
 			else
 				echo "[E] Failed: Java not properly configured"
 			fi
@@ -548,8 +590,12 @@ GOptimize()
 
 		#### ZIPALIGN ####
 		echo " +- Zipaligning APK..."
-		zipalign -f 4 "$APK" "${APK}.zipa" > /dev/null
-		mv -f "${APK}.zipa" "$APK"
+		zipalign -f 4 "GOTemp.zip" "GOZipa.zip" 2>&1 1>/dev/null | grep -vi 'WARNING: header mismatch';
+		mv -f "GOZipa.zip" "../$APK"
+		if [ $? -ne 0 ]; then echo -e '\n[E] File operation errors!!!'; exit 1; fi
+		cd '..';
+		## read -sn1;
+		rm -rf ".go[${APK%.*}]" 2>/dev/null;
 
 		cd "$OPWD"
 		return 0;
