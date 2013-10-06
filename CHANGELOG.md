@@ -1,7 +1,7 @@
 ChangeLog
 ===============================================================================
 
-Version 2.0.0.3.6-LX
+Version 2.0.0.3.8-LX
 --------------------
 
  * Added Updated apktool v2.0.0b1-v2.0.0b6.
@@ -14,7 +14,7 @@ Version 2.0.0.3.6-LX
  * Added Updated wget v1.14.
  * Added Updated zlib.dll v1.2.8.
  * Added Updated ColorEdit v1.1. 
- * Added Updated notepad++ v6.4.5 de/en/fr/pl/ru.
+ * Added Updated notepad++ v6.5 de/en/fr/pl/ru.
  * Added Updated aapt.
  * Added Updated 7za v9.22.
  * Added Updated advpng v1.17.

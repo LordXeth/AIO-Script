@@ -1,6 +1,6 @@
 #!/bin/bash
 #### GOptimize by gu5t3r@XDA ####
-GOVersion=1.25
+GOVersion=1.26
 
 #### CHECK FOR BINARIES ####
 if [ ! -f /bin/.GOptimize ]; then
@@ -303,9 +303,8 @@ GOptimize()
 		
 		if [ -d ".go[${APK%.*}]" ]; then rm -rf ".go[${APK%.*}]" 2>/dev/null; fi
 		mkdir -m 777 -p ".go[${APK%.*}]/GOApk";
-		cd ".go[${APK%.*}]"
-		GOTemp_zip='GOTemp.zip';
-		cp -f "../$APK" "GOTemp.zip";
+		cd ".go[${APK%.*}]";
+		cp -f "../$APK" "GOTemp.apk";
 		if [ $? -ne 0 ]; then echo -e '\n[E] File operation errors!!!'; exit 1; fi
 		
 		#### EXTRACT IF NEEDED ####
@@ -313,13 +312,13 @@ GOptimize()
 			echo " |- Extracting APK..."
 			cd "GOApk";
 			if [ "$opt_r" ]; then
-				7za x -ssc- -y -xr\!META-INF -xr\!AndroidManifest.xml "../GOTemp.zip" > /dev/null
+				7za x -ssc- -y -xr\!META-INF -xr\!AndroidManifest.xml "../GOTemp.apk" > /dev/null
 			else
-				if [ "$opt_p" ]; then 7za x -ssc- -y -ir\!*.png -xr\!*.9.png "../GOTemp.zip" > /dev/null; fi
-				if [ "$opt_a" ]; then 7za x -ssc- -y -i\!resources.arsc "../GOTemp.zip" > /dev/null; fi
-				if [ "$opt_d" ]; then 7za x -ssc- -y -i\!classes.dex "../GOTemp.zip" > /dev/null; fi
-				if [ "$opt_l" ]; then 7za x -ssc- -y -i\!lib "../GOTemp.zip" > /dev/null; fi
-				if [ "$opt_j" ]; then 7za x -ssc- -y -ir\!*.jpg -ir\!*.jpeg -ir\!*.jpe -ir\!*.jfif "../GOTemp.zip" > /dev/null; fi
+				if [ "$opt_p" ]; then 7za x -ssc- -y -ir\!*.png -xr\!*.9.png "../GOTemp.apk" > /dev/null; fi
+				if [ "$opt_a" ]; then 7za x -ssc- -y -i\!resources.arsc "../GOTemp.apk" > /dev/null; fi
+				if [ "$opt_d" ]; then 7za x -ssc- -y -i\!classes.dex "../GOTemp.apk" > /dev/null; fi
+				if [ "$opt_l" ]; then 7za x -ssc- -y -i\!lib "../GOTemp.apk" > /dev/null; fi
+				if [ "$opt_j" ]; then 7za x -ssc- -y -ir\!*.jpg -ir\!*.jpeg -ir\!*.jpe -ir\!*.jfif "../GOTemp.apk" > /dev/null; fi
 			fi
 			chmod -R 777 '.'
 			Apk_Was_Extracted='1';
@@ -381,7 +380,7 @@ GOptimize()
 				let size_before+=0; if [ "$size_before" -eq 0 ]; then size_before=1; size_after=1; fi
 				echo -e "\r |- Optimized PNG's: 100% | Saved: $((($size_before-$size_after)/1024)) kB ($((($size_before-$size_after)*100/$size_before))%)"
 				#echo " |- Packing PNG's in APK..."
-				7za $(COptions) -ir\!*.png -xr\!*.9.png "../GOTemp.zip" > /dev/null
+				7za $(COptions) -ir\!*.png -xr\!*.9.png "../GOTemp.apk" > /dev/null
 			fi
 			unset PNGLIST PNG size_before size_after;
 		fi
@@ -412,7 +411,7 @@ GOptimize()
 				let size_before+=0; if [ "$size_before" -eq 0 ]; then size_before=1; size_after=1; fi
 				echo -e "\r |- Optimized JPG's: 100% | Saved: $((($size_before-$size_after)/1024)) kB ($((($size_before-$size_after)*100/$size_before))%)"
 				#echo " |- Packing JPG's in APK..."
-				7za $(COptions) -ir\!*.jpg -ir\!*.jpeg -ir\!*.jpe -ir\!*.jfif "../GOTemp.zip" > /dev/null
+				7za $(COptions) -ir\!*.jpg -ir\!*.jpeg -ir\!*.jpe -ir\!*.jfif "../GOTemp.apk" > /dev/null
 			fi
 			unset JPGLIST JPG size_before size_after;
 		fi
@@ -426,7 +425,7 @@ GOptimize()
 				else
 					echo " |- Recompressing resources.arsc with CL($opt_a)";
 				fi
-				7za $(COptions $opt_a) "../GOTemp.zip" "resources.arsc" > /dev/null
+				7za $(COptions $opt_a) "../GOTemp.apk" "resources.arsc" > /dev/null
 			else
 				echo " |- NO resources.arsc in APK detected"
 			fi
@@ -481,7 +480,7 @@ GOptimize()
 				else
 					echo " |- Recompressing classes.dex with CL($opt_d)";
 				fi
-				7za $(COptions $opt_d) "../GOTemp.zip" "classes.dex" > /dev/null
+				7za $(COptions $opt_d) "../GOTemp.apk" "classes.dex" > /dev/null
 			else
 				echo " |- NO classes.dex in APK detected"
 			fi
@@ -495,7 +494,7 @@ GOptimize()
 				else
 					echo " |- Recompressing libraries with CL($opt_l)";
 				fi
-				7za $(COptions $opt_l) -i\!lib/*/*.* "../GOTemp.zip" > /dev/null
+				7za $(COptions $opt_l) -i\!lib/*/*.* "../GOTemp.apk" > /dev/null
 			else
 				echo " |- NO libraries in APK detected"
 			fi
@@ -517,15 +516,15 @@ GOptimize()
 			fi
 			store_list='';
 			if [ -z "$opt_R" ] || [ "$opt_R" = "+" ]; then
-				7za l "../GOTemp.zip" | sed -ne 's/.*[ \t]\+\([0-9]\+\)[ \t]\+\([0-9]\+\)[ \t]\+/\1|\2|/p' | awk -F '|' 'BEGIN{IGNORECASE = 1} { if ( $1 == $2 && $2 != 0 && $3 !~ /.*\.(png|jpg|jpeg|jpe|jfif)/ ) print $3 }' > ../store_list
+				7za l "../GOTemp.apk" | sed -ne 's/.*[ \t]\+\([0-9]\+\)[ \t]\+\([0-9]\+\)[ \t]\+/\1|\2|/p' | awk -F '|' 'BEGIN{IGNORECASE = 1} { if ( $1 == $2 && $2 != 0 && $3 !~ /.*\.(png|jpg|jpeg|jpe|jfif)/ ) print $3 }' > ../store_list
 				if [ -s '../store_list' ]; then store_list='-x@../store_list'; fi
 			fi
 			
 			find '.' -type f -not -iname '*.*' | sed -n 's#^\./##p' > ../noex_list
 			if [ -s '../noex_list' ]; then noex_list='-i@../noex_list'; else noex_list=''; fi
 			
-			nice -n19 7za $(COptions $opt_r) -ir\!*.* ${noex_list} ${resources_arsc} ${classes_dex} ${libraries} ${store_list} -xr\!*.png -xr\!*.jpg -xr\!*.jpeg -xr\!*.jpe -xr\!*.jfif ${x_copy_list} "../GOTemp.zip" > /dev/null
-			7za $(COptions) ${i_copy_list} ${png_files} ${jpg_files} "../GOTemp.zip" > /dev/null
+			nice -n19 7za $(COptions $opt_r) -ir\!*.* ${noex_list} ${resources_arsc} ${classes_dex} ${libraries} ${store_list} -xr\!*.png -xr\!*.jpg -xr\!*.jpeg -xr\!*.jpe -xr\!*.jfif ${x_copy_list} "../GOTemp.apk" > /dev/null
+			7za $(COptions) ${i_copy_list} ${png_files} ${jpg_files} "../GOTemp.apk" > /dev/null
 			unset -v i_copy_list x_copy_list r_copy_list store_list
 		fi
 
@@ -533,13 +532,13 @@ GOptimize()
 		if [ "$Apk_Was_Extracted" ]; then cd '..'; fi
 
 		#### Check All Files Are In APK####
-		if [ "$GOCHECK" != "`7za l -tzip "GOTemp.zip" 2>/dev/null | sed -n 's/^[ \t]\+[0-9]\+[ \t]\+[0-9]\+[ \t]\+\([0-9]\+\)[ \t].*[ \t]\([0-9]\+\)[ \t].*/\1_\2/gp'`" ]; then
+		if [ "$GOCHECK" != "`7za l -tzip "GOTemp.apk" 2>/dev/null | sed -n 's/^[ \t]\+[0-9]\+[ \t]\+[0-9]\+[ \t]\+\([0-9]\+\)[ \t].*[ \t]\([0-9]\+\)[ \t].*/\1_\2/gp'`" ]; then
 			echo "[E] <[ $APK ]> CORRUPTED during GOptimization"'!!!'
 		fi
 
 		#### KEEP ONLY SELECTED LIBRARIES ####
 		if [ "$opt_k" ]; then
-			lib_test="`7za l -i\!lib/* "GOTemp.zip" | sed -n 's#^.*[\t ]lib/\([[:alnum:]-]\+\)/.*$#\1#gp' |  awk '!x[$0]++'`";
+			lib_test="`7za l -i\!lib/* "GOTemp.apk" | sed -n 's#^.*[\t ]lib/\([[:alnum:]-]\+\)/.*$#\1#gp' |  awk '!x[$0]++'`";
 			
 			case "$opt_k" in
 				1)
@@ -568,7 +567,7 @@ GOptimize()
 			lib_remove="`echo "${lib_test}" | grep -xv "${lib_keep}"`"
 			if [ -n "$lib_remove" ]; then
 				echo -n " |- Removing libraries for: "; echo -n "$lib_remove" | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/, /g'; echo "";
-				7za d -tzip -i\!"lib/*" -x\!"lib/${lib_keep}/*" "GOTemp.zip" > /dev/null
+				7za d -tzip -i\!"lib/*" -x\!"lib/${lib_keep}/*" "GOTemp.apk" > /dev/null
 			else
 				echo " |- NO libraries to remove..."
 			fi
@@ -580,9 +579,9 @@ GOptimize()
 		#### SIGN APK WITH ANDROID TEST CERTIFICATE ####
 		if [ -n "$opt_t" ]; then
 			echo " |- Signing APK with Android test certificate"
-			java -version > /dev/null 2>&1;
+			java -version &>/dev/null;
 			if [ ${?} -eq 0 ] && [ "$(java -version 2>&1) | grep 'java version')" ] &&  [ -f /bin/sign ] && [ -f /bin/sign.jar ]; then
-				sign --override "GOTemp.zip"
+				sign --override "GOTemp.apk"
 			else
 				echo "[E] Failed: Java not properly configured"
 			fi
@@ -590,8 +589,8 @@ GOptimize()
 
 		#### ZIPALIGN ####
 		echo " +- Zipaligning APK..."
-		zipalign -f 4 "GOTemp.zip" "GOZipa.zip" 2>&1 1>/dev/null | grep -vi 'WARNING: header mismatch';
-		mv -f "GOZipa.zip" "../$APK"
+		zipalign -f 4 "GOTemp.apk" "GOZipa.apk" 2>&1 1>/dev/null | grep -vi 'WARNING: header mismatch';
+		mv -f "GOZipa.apk" "../$APK"
 		if [ $? -ne 0 ]; then echo -e '\n[E] File operation errors!!!'; exit 1; fi
 		cd '..';
 		## read -sn1;

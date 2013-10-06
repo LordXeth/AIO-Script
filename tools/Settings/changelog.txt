@@ -1,4 +1,4 @@
- AIO-Script		v2.0.0.3.6
+ AIO-Script		v2.0.0.3.8
 
  apktool         	v1.3.2 - v1.5.2 + v1.5.3 SNAPSHOT
  apktool		v1.5.3 inverted (TRDS 2.0)
@@ -18,7 +18,7 @@
  wget			v1.14
  zlib.dll		v1.2.8
 
- Notepad++		v6.4.5 de/en/fr/pl/ru
+ Notepad++		v6.5 de/en/fr/pl/ru
  PRGrep			v8.12
  ColorEdit		v1.1
  ColorMania		v4.0		
@@ -35,5 +35,5 @@
  HxD Hex Editor		v1.7.7.0
  ColorEdit		v1.0 beta
  VisualColorPicker	v2.6
- MiniCygwin GOptimize	v1.25
+ MiniCygwin GOptimize	v1.26
  
