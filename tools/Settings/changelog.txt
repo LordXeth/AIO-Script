@@ -35,5 +35,5 @@
  HxD Hex Editor		v1.7.7.0
  ColorEdit		v1.0 beta
  VisualColorPicker	v2.6
- MiniCygwin GOptimize	v1.26
+ MiniCygwin GOptimize	v1.27b6
  

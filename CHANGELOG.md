@@ -28,7 +28,7 @@ Version 2.0.0.3.8-LX
  * Added AndroidImageScaler v1.0.0.
  * Added HxD Hex Editor v1.7.7.0.
  * Added JD-GUI v0.3.5.
- * Added MiniGOptimize v1.25.
+ * Added MiniGOptimize v1.27b6.
  
  * Added Updated modif. Script & Facelift
  * Added Update.cmd for 2 Menu Options

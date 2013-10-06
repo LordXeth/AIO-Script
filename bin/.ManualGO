@@ -10,12 +10,17 @@ set +H &>/dev/null; set +o histexpand &>/dev/null;
 
 JavaPATH="$(cat /bin/.JavaPATH 2>/dev/null | sed -ne 1p 2>/dev/null)"
 if [ "$JavaPATH" ]; then
-	JavaPATH="$(cygpath "$JavaPATH" 2>/dev/null)"
+	JavaPATH="$(cygpath "$JavaPATH" 2>/dev/null | sed -e 's#/$##')"
 	if [ -d "$JavaPATH" ]; then
-		export PATH="$PATH:$JavaPATH"
-		java -version > /dev/null 2>&1;
-		if [ ${?} -ne 0 ] || [ ! "$(java -version 2>&1 | grep 'java version')" ]; then
+		"$JavaPATH"/java -version > /dev/null 2>&1;
+		if [ ${?} -ne 0 ]; then
 			echo -e "\n[E] Java not properly configured\n";
+		else
+			if [ 170 -gt "$("$JavaPATH"/java -version 2>&1 | sed -ne 's#^java.*\([0-9]\.[0-9]\.[0-9]\).*#\1#Ip' | sed -ne 's#\.##gp' | sed -ne 1p)" ]; then
+				echo -e "\n[E] Java v1.7 or higher required\n";
+			else
+				export PATH="$PATH:$JavaPATH"
+			fi
 		fi
 	fi
 fi

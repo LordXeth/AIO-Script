@@ -1,10 +1,10 @@
 #!/bin/bash
 #### GOptimize by gu5t3r@XDA ####
-GOVersion=1.26
+GOVersion=1.27.06
 
 #### CHECK FOR BINARIES ####
 if [ ! -f /bin/.GOptimize ]; then
-	for witch in TruePNG pngout DeflOpt zipalign basename dirname realpath wc find awk stat cat xargs sed grep chmod 7za nice sleep; do
+	for witch in TruePNG pngout DeflOpt zipalign basename dirname realpath wc find awk stat cat xargs sed grep chmod 7za nice sleep sort tr; do
 		which "$witch" > /dev/null 2>&1
 		if [ ${?} -ne 0 ]; then missing="$missing [$witch]"; fi
 	done
@@ -165,8 +165,8 @@ CCheck()
 }
 
 #### GET OPTIONS ####
-unset -v opt_h opt_p opt_m opt_z opt_a opt_r opt_l opt_d opt_k opt_b opt_s opt_t opt_j opt_R SMALI;
-while getopts “h:pm:a:r:l:d:b:k:z:s:tj:R:” OPTION 2>/dev/null
+unset -v opt_h opt_p opt_m opt_z opt_a opt_r opt_l opt_d opt_k opt_b opt_s opt_t opt_j opt_R opt_e opt_E SMALI;
+while getopts “h:pm:a:r:l:d:b:k:z:s:tj:R:e:E” OPTION 2>/dev/null
 do
 	case $OPTION in
 		h)
@@ -190,7 +190,7 @@ do
 		z)
 			opt_z="$OPTARG"
 			if [ "$opt_z" = 'o' ]; then opt_z='b'; fi
-			if [ -z "$opt_p" ] || [ "$opt_z" != "z" ] && [ "$opt_z" != "b" ]; then usage; exit 1; fi
+			if [ "$opt_z" != "z" ] && [ "$opt_z" != "b" ] || [ -z "$opt_p" ]; then usage; exit 1; fi
 			if ! which "PNGZopfli" &>/dev/null || ! which "zopfli" &>/dev/null; then
 				echo -e "\n[E] Missing binaries: PNGZopfli or zopfli"; exit 1;
 			fi 
@@ -227,6 +227,7 @@ do
 			;;
 		s)
 			opt_s="$OPTARG"
+			if [ -z "$opt_b" ]; then opt_s=''; fi
 			case "$opt_s" in
 				1) SMALI_LIST='smali';;
 				2) SMALI_LIST='smali2';;
@@ -248,6 +249,18 @@ do
 			if [ "$opt_R" != '-' ] && [ "$opt_R" != '+' ] || [ -z "$opt_r" ]; then
 				usage; exit 1;
 			fi
+			;;
+		e)
+			opt_e="$OPTARG";
+			if [ "$opt_e" = '-' ]; then :;
+			elif [ -z "$opt_e" ] || [[ ! "$opt_e" =~ ^[a-zA-Z\ ]*$ ]] || [ -n "$(echo "$opt_e" | sed -e 's/ \?[[:alpha:]]\{2\} \?//gI')" ]; then
+				usage; exit 1;
+			else
+				opt_e="$(echo -n "$opt_e" | sed -e 's/./\L&/g')"
+			fi
+			;;
+		E)
+			opt_E=1;
 			;;
 		?)
 			usage; exit 1;
@@ -303,9 +316,103 @@ GOptimize()
 		
 		if [ -d ".go[${APK%.*}]" ]; then rm -rf ".go[${APK%.*}]" 2>/dev/null; fi
 		mkdir -m 777 -p ".go[${APK%.*}]/GOApk";
-		cd ".go[${APK%.*}]";
+		cd ".go[${APK%.*}]"
+		GOTemp_zip='GOTemp.apk';
 		cp -f "../$APK" "GOTemp.apk";
 		if [ $? -ne 0 ]; then echo -e '\n[E] File operation errors!!!'; exit 1; fi
+		
+		
+		
+		
+		#### REMOVE UNNEEDED LANGUAGES FROM RESOURCES USING APKTOOL ####
+		if [ -n "$opt_e" ]; then
+			echo -n ' |- Cleaning resources of unneeded languages...';
+			if java -version &>/dev/null && [ "$(java -version 2>&1) | grep 'java version')" ]; then
+				echo '';
+				if [ -d "../framework" ]; then
+					echo ' |  +- Setting up frameworks...'
+					find "../framework/" -maxdepth 1 -mindepth 1 -type f -iname '*.apk' -exec apktool if -p GOATif "{}" \; &>/dev/null;
+					echo -n ' |  |- ';
+				else
+					echo -n ' |  +- ';
+				fi
+				echo -n 'Running disassemble test...: '
+				if apktool d -a "$(cygpath -wal /bin/aapt.exe)" -s -p GOATif -o GOATool GOTemp.apk &>disassemble.log; then
+					echo 'Success!';
+					echo -n ' |  |- Running assemble test......: '
+					apktool b -a "$(cygpath -wal /bin/aapt.exe)" -p GOATif -o GOATool.apk GOATool &>assemble.log;
+					if [ -f 'GOATool/build/apk/resources.arsc' ] && [ -d 'GOATool/build/apk/res' ] && [ -f 'GOATool.apk' ]; then
+						rm -rf 'GOATool/build'; rm -r 'GOATool.apk';
+						echo 'Success!';
+						if [ "$opt_e" != "-" ]; then for each in $opt_e; do exclude_lang="$exclude_lang"'\|'"$each"; done; fi
+						req_lang="$(sed -ne 's#^aapt: warning: string .*; found: \([[:alpha:][:space:]]\+\)#\1#pI' assemble.log | sed -e 's/\([[:alpha:]]\{2\}\)_[[:alpha:]]\+/\1/gI' | awk '{ j=0; for(i=1;i<=NF;i++){ if( $i ~ /^[[:alpha:]]{2}$/ ){if(j==0)print " "; else printf " "; printf $i; j++} } }')";
+						if [ -n "req_lang" ]; then
+							#### DOH, Detect UnNeeded Languages ####
+							min_field="$(echo "$req_lang" |  awk '{if (NF<i || i==0)i=NF;} END{print i}')";
+							min_lang="$(echo "$req_lang" | sort -uf | awk '{ if (NF=='$min_field') for(i=1;i<=NF;i++) print $i}' | sort -uf | awk '{printf $0 " "}')"
+							req_lang="$(echo "$req_lang" | sed -e 's/.*\(en'"$exclude_lang"'\).*/\1/I' | sort -uf)"
+							i=0; for each in $min_lang; do if [ $i -eq 0 ]; then min_lang="$each"; else min_lang="$min_lang"'\|'"$each"; fi; i=1; done
+							req_lang="$(echo "$req_lang" | sed -e 's/.*\('"$min_lang"'\).*/\1/I' | sort -uf)"
+							min_lang="$(echo "$req_lang" | awk '{if($1 != "" )printf $1 " "}')"
+							i=0; for each in $min_lang; do if [ $i -eq 0 ]; then min_lang="$each"; else min_lang="$min_lang"'\|'"$each"; fi; i=1; done
+							req_lang="$(echo "$req_lang" | sed -e 's/.*\('"$min_lang"'\).*/\1/I' | sort -uf | awk '{if($1 != "" )printf $1 " "}')"
+						fi
+						
+						if [ "$req_lang" ]; then echo " |  |- Detected required languages: $req_lang"; fi
+						for each in $req_lang; do exclude_lang="$exclude_lang"'\|'"$each"; done
+							removable_lang="$(find ./GOATool/res/ -maxdepth 1 -mindepth 1 -type d -regextype sed -iregex '\./.*/res/values-[[:alpha:]]\{2\}\(-[[:alpha:]]\+\)\?' -not -iregex '\./.*/res/values-\(sw\|en'$exclude_lang'\)\(-[[:alpha:]]\+\)\?' | sed -ne 's#.*/res/values-\([[:alpha:]]\{2\}\)\(-[[:alpha:]]\+\)\?#\1#Ip' | sort -uf)";
+						if [ -n "$removable_lang" ]; then
+							mkdir -p -m 777 GOATresb; e1=''; e2=''; e3=''; i=0;
+							for each in $removable_lang; do 
+								echo -ne "\r |  |- Removing unneeded languages: ${each}${e1}${e2}${e3}"; e2="$e1"; e1=" $each"; if [ $i -eq 0 ]; then e3=' []o:'; i=1; else e3='[ ]o:'; i=0; fi;
+								mv -f ./GOATool/res/values-${each} ./GOATresb/ &>/dev/null
+								mv -f ./GOATool/res/values-${each}-* ./GOATresb/ &>/dev/null
+								mv -f ./GOATool/res/values-*-${each} ./GOATresb/ &>/dev/null
+								mv -f ./GOATool/res/values-*-${each}-* ./GOATresb/ &>/dev/null
+								mv -f ./GOATool/res/raw-${each} ./GOATresb/ &>/dev/null
+								mv -f ./GOATool/res/raw-${each}-* ./GOATresb/ &>/dev/null
+								mv -f ./GOATool/res/xml-${each} ./GOATresb/ &>/dev/null
+								mv -f ./GOATool/res/xml-${each}-* ./GOATresb/ &>/dev/null
+								mv -f ./GOATool/res/drawable-${each}-* ./GOATresb/ &>/dev/null
+								
+							done
+							echo -e '\r |  |- Removing unneeded languages: Success!     ';
+							echo -n ' |  +- Attempting to assemble APK.: ';
+							apktool b -a "$(cygpath -wal /bin/aapt.exe)" -p GOATif -o GOATool.apk GOATool &>assemble2.log;
+							if [ -f 'GOATool/build/apk/resources.arsc' ] && [ -d 'GOATool/build/apk/res' ] && [ -f 'GOATool.apk' ]; then
+								echo 'Success!';
+								cd 'GOATool/build/apk';
+								find 'res' -type f -not \( -iname '*.png' -or -iname '*.xml' \) > ../files_list
+								7za l "../../../GOTemp.apk" | sed -ne 's/.*[ \t]\+\([0-9]\+\)[ \t]\+\([0-9]\+\)[ \t]\+/\1|\2|/p' | awk -F '|' 'BEGIN{IGNORECASE = 1} { if ( $1 == $2 && $2 != 0 && $3 !~ /.*\.png$/ ) print $3 }' > ../store_list
+								7za d -y -ssc- -tzip -i'!res' "../../../GOTemp.apk" >/dev/null
+								7za a -y -ssc- -tzip -mpass=11 -mfb=32 -i'!resources.arsc' -ir'!*.*' -i@../files_list -x@../store_list -xr'!*.png' -x'!AndroidManifest.xml' -x'!lib' -x'!classes.dex' "../../../GOTemp.apk" >/dev/null
+								7za a -y -ssc- -tzip -mm=Copy -ir'!*.png' -i@../store_list "../../../GOTemp.apk" >/dev/null
+								cd '../../../';
+								GOCHECK="`7za l -tzip "GOTemp.apk" 2>/dev/null | sed -n 's/^[ \t]\+[0-9]\+[ \t]\+[0-9]\+[ \t]\+\([0-9]\+\)[ \t].*[ \t]\([0-9]\+\)[ \t].*/\1_\2/gp'`"
+							else
+								echo -e 'Failed!\r[w] +'
+							fi
+						else
+							echo ' |  +- No removable lang. found...: Skipping!'
+						fi
+					else
+						echo -e 'Failed!\r[w] +'
+					fi
+				else
+					echo -e 'Failed!\r[w] +'
+				fi
+				if [ -n "$opt_E" ]; then read -sn1; fi
+				if [ -d "GOATool" ]; then rm -rf "GOATool"; fi
+				if [ -d "GOATif" ]; then rm -rf "GOATif"; fi
+				if [ -d "GOATresb" ]; then rm -rf "GOATresb"; fi
+				if [ -f "GOATool.apk" ]; then rm -rf "GOATool.apk"; fi
+			else
+				echo "[E] Cleaning resources FAILED: Java not properly configured"
+			fi
+		fi
+		
+		
+		
 		
 		#### EXTRACT IF NEEDED ####
 		if [ "$opt_r" ] || [ "$opt_p" ] || [ "$opt_a" ] || [ "$opt_d" ] || [ "$opt_l" ] || [ "$opt_j" ]; then
@@ -516,7 +623,7 @@ GOptimize()
 			fi
 			store_list='';
 			if [ -z "$opt_R" ] || [ "$opt_R" = "+" ]; then
-				7za l "../GOTemp.apk" | sed -ne 's/.*[ \t]\+\([0-9]\+\)[ \t]\+\([0-9]\+\)[ \t]\+/\1|\2|/p' | awk -F '|' 'BEGIN{IGNORECASE = 1} { if ( $1 == $2 && $2 != 0 && $3 !~ /.*\.(png|jpg|jpeg|jpe|jfif)/ ) print $3 }' > ../store_list
+				7za l "../GOTemp.apk" | sed -ne 's/.*[ \t]\+\([0-9]\+\)[ \t]\+\([0-9]\+\)[ \t]\+/\1|\2|/p' | awk -F '|' 'BEGIN{IGNORECASE = 1} { if ( $1 == $2 && $2 != 0 && $3 !~ /.*\.(png|jpg|jpeg|jpe|jfif)$/ ) print $3 }' > ../store_list
 				if [ -s '../store_list' ]; then store_list='-x@../store_list'; fi
 			fi
 			
@@ -579,7 +686,7 @@ GOptimize()
 		#### SIGN APK WITH ANDROID TEST CERTIFICATE ####
 		if [ -n "$opt_t" ]; then
 			echo " |- Signing APK with Android test certificate"
-			java -version &>/dev/null;
+			java -version > /dev/null 2>&1;
 			if [ ${?} -eq 0 ] && [ "$(java -version 2>&1) | grep 'java version')" ] &&  [ -f /bin/sign ] && [ -f /bin/sign.jar ]; then
 				sign --override "GOTemp.apk"
 			else
