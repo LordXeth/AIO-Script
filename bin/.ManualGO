@@ -8,9 +8,9 @@ rm -rf /tmp/* > /dev/null 2>&1
 # Exclamation mark (!) workaround
 set +H &>/dev/null; set +o histexpand &>/dev/null;
 
-JavaPATH="$(cat /bin/.JavaPATH 2>/dev/null | sed -ne 1p 2>/dev/null)"
-if [ "$JavaPATH" ]; then
-	JavaPATH="$(cygpath "$JavaPATH" 2>/dev/null | sed -e 's#/$##')"
+JavaPATH="$(cat /bin/.JavaPATH 2>/dev/null | sed -ne 's#\"##g;s#\\$##;1p' 2>/dev/null)"
+if [ -n "$JavaPATH" ]; then
+	JavaPATH="$(cygpath -ua "$JavaPATH" 2>/dev/null)"
 	if [ -d "$JavaPATH" ]; then
 		"$JavaPATH"/java -version > /dev/null 2>&1;
 		if [ ${?} -ne 0 ]; then

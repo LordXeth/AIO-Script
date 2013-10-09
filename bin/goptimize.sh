@@ -1,6 +1,6 @@
 #!/bin/bash
 #### GOptimize by gu5t3r@XDA ####
-GOVersion=1.27.06
+GOVersion=1.27.09
 
 #### CHECK FOR BINARIES ####
 if [ ! -f /bin/.GOptimize ]; then
@@ -15,20 +15,21 @@ fi
 #### USAGE ####
 usage()
 {
-cat << EOF
+	local hash; local i=0; while [ $i -lt $((25-${#GOVersion})) ]; do hash="$hash"'#'; let i++; done;
+	local name="${0##*/}"; local space; i=0; while [ $i -lt $((35-${#name})) ]; do space=" $space"; let i++; done;
+	cat << EOF
 
-######################[ GOptimize v${GOVersion} ]######################
+#####################[ GOptimize v${GOVersion} ]${hash}##
 --------------------------------------------------------------#
-  usage: goptimize [options] *.apk                            #
+  usage: ${name} [options] *.apk ${space} #
 ###############################################################
-  This script optimizes PNG's in APK using                    #
-  TruePNG + PNGout / PNGZopfli + DeflOpt .:. by gu5t3r@XDA    #
+  GOptimize optimizes APK's using various tools ## gu5t3r@XDA #
 ###############################################################
  OPTIONS:                                                     #
   -h   Show Help                                              #
   -he  Show Help + Extra Help (also accepts -hh)              #
   -p   Optimize PNG's                                         #
-  -m   MultiThreaded PNG optimizing [2-16]; forces -p         #
+  -m   Multi-Threaded PNG optimization [2-16]; forces -p      #
   -zz  Use PNGZopfli instead PNGout; Save few more kB at cost #
        of ~20% longer optimizing; multithreading recommended  #
   -zb  Use both PNGout + PNGZopfli for maximum saving at cost #
@@ -57,6 +58,10 @@ usagee()
 cat << EOF
                          Extra Help                           #
 --------------------------------------------------------------#
+  PNG Optimization:                                           #
+      PNG optimization is lossless and tools used for it are: #
+      TruePNG, PngOut, PNGZopfli and DeflOpt.                 #
+                                                              #
   Compression Levels:                                         #
       Script always uses 11 passes for compression which      #
       guarantees maximum compression and does not impact      #
@@ -327,87 +332,101 @@ GOptimize()
 		#### REMOVE UNNEEDED LANGUAGES FROM RESOURCES USING APKTOOL ####
 		if [ -n "$opt_e" ]; then
 			echo -n ' |- Cleaning resources of unneeded languages...';
-			if java -version &>/dev/null && [ "$(java -version 2>&1) | grep 'java version')" ]; then
-				echo '';
-				if [ -d "../framework" ]; then
-					echo ' |  +- Setting up frameworks...'
-					find "../framework/" -maxdepth 1 -mindepth 1 -type f -iname '*.apk' -exec apktool if -p GOATif "{}" \; &>/dev/null;
-					echo -n ' |  |- ';
-				else
-					echo -n ' |  +- ';
-				fi
-				echo -n 'Running disassemble test...: '
-				if apktool d -a "$(cygpath -wal /bin/aapt.exe)" -s -p GOATif -o GOATool GOTemp.apk &>disassemble.log; then
-					echo 'Success!';
-					echo -n ' |  |- Running assemble test......: '
-					apktool b -a "$(cygpath -wal /bin/aapt.exe)" -p GOATif -o GOATool.apk GOATool &>assemble.log;
-					if [ -f 'GOATool/build/apk/resources.arsc' ] && [ -d 'GOATool/build/apk/res' ] && [ -f 'GOATool.apk' ]; then
-						rm -rf 'GOATool/build'; rm -r 'GOATool.apk';
+			if [ -n "$(7za l -tzip -ssc- -i'!resources.arsc' 'GOTemp.apk' | sed -ne 's/.\+[[:blank:]]\+[[:digit:]]\+[[:blank:]]\+[[:digit:]]\+[[:blank:]]\+\(resources\.arsc\)$/\1/pI')" ]; then
+				if java -version &>/dev/null && [ "$(java -version 2>&1) | grep 'java version')" ]; then
+					echo '';
+					if [ -d "../framework" ]; then
+						echo ' |  +- Setting up frameworks...'
+						find "../framework/" -maxdepth 1 -mindepth 1 -type f -iname '*.apk' -exec apktool if -p GOATifw "{}" \; &>/dev/null;
+						echo -n ' |  |- ';
+					else
+						echo -n ' |  +- ';
+					fi
+					echo -n 'Running disassemble test...: '
+					if apktool d -a "$(cygpath -wal /bin/aapt.exe)" -s -p GOATifw -o GOATool GOTemp.apk &>disassemble.log; then
 						echo 'Success!';
-						if [ "$opt_e" != "-" ]; then for each in $opt_e; do exclude_lang="$exclude_lang"'\|'"$each"; done; fi
-						req_lang="$(sed -ne 's#^aapt: warning: string .*; found: \([[:alpha:][:space:]]\+\)#\1#pI' assemble.log | sed -e 's/\([[:alpha:]]\{2\}\)_[[:alpha:]]\+/\1/gI' | awk '{ j=0; for(i=1;i<=NF;i++){ if( $i ~ /^[[:alpha:]]{2}$/ ){if(j==0)print " "; else printf " "; printf $i; j++} } }')";
-						if [ -n "req_lang" ]; then
-							#### DOH, Detect UnNeeded Languages ####
-							min_field="$(echo "$req_lang" |  awk '{if (NF<i || i==0)i=NF;} END{print i}')";
-							min_lang="$(echo "$req_lang" | sort -uf | awk '{ if (NF=='$min_field') for(i=1;i<=NF;i++) print $i}' | sort -uf | awk '{printf $0 " "}')"
-							req_lang="$(echo "$req_lang" | sed -e 's/.*\(en'"$exclude_lang"'\).*/\1/I' | sort -uf)"
-							i=0; for each in $min_lang; do if [ $i -eq 0 ]; then min_lang="$each"; else min_lang="$min_lang"'\|'"$each"; fi; i=1; done
-							req_lang="$(echo "$req_lang" | sed -e 's/.*\('"$min_lang"'\).*/\1/I' | sort -uf)"
-							min_lang="$(echo "$req_lang" | awk '{if($1 != "" )printf $1 " "}')"
-							i=0; for each in $min_lang; do if [ $i -eq 0 ]; then min_lang="$each"; else min_lang="$min_lang"'\|'"$each"; fi; i=1; done
-							req_lang="$(echo "$req_lang" | sed -e 's/.*\('"$min_lang"'\).*/\1/I' | sort -uf | awk '{if($1 != "" )printf $1 " "}')"
-						fi
-						
-						if [ "$req_lang" ]; then echo " |  |- Detected required languages: $req_lang"; fi
-						for each in $req_lang; do exclude_lang="$exclude_lang"'\|'"$each"; done
-							removable_lang="$(find ./GOATool/res/ -maxdepth 1 -mindepth 1 -type d -regextype sed -iregex '\./.*/res/values-[[:alpha:]]\{2\}\(-[[:alpha:]]\+\)\?' -not -iregex '\./.*/res/values-\(sw\|en'$exclude_lang'\)\(-[[:alpha:]]\+\)\?' | sed -ne 's#.*/res/values-\([[:alpha:]]\{2\}\)\(-[[:alpha:]]\+\)\?#\1#Ip' | sort -uf)";
-						if [ -n "$removable_lang" ]; then
-							mkdir -p -m 777 GOATresb; e1=''; e2=''; e3=''; i=0;
-							for each in $removable_lang; do 
-								echo -ne "\r |  |- Removing unneeded languages: ${each}${e1}${e2}${e3}"; e2="$e1"; e1=" $each"; if [ $i -eq 0 ]; then e3=' []o:'; i=1; else e3='[ ]o:'; i=0; fi;
-								mv -f ./GOATool/res/values-${each} ./GOATresb/ &>/dev/null
-								mv -f ./GOATool/res/values-${each}-* ./GOATresb/ &>/dev/null
-								mv -f ./GOATool/res/values-*-${each} ./GOATresb/ &>/dev/null
-								mv -f ./GOATool/res/values-*-${each}-* ./GOATresb/ &>/dev/null
-								mv -f ./GOATool/res/raw-${each} ./GOATresb/ &>/dev/null
-								mv -f ./GOATool/res/raw-${each}-* ./GOATresb/ &>/dev/null
-								mv -f ./GOATool/res/xml-${each} ./GOATresb/ &>/dev/null
-								mv -f ./GOATool/res/xml-${each}-* ./GOATresb/ &>/dev/null
-								mv -f ./GOATool/res/drawable-${each}-* ./GOATresb/ &>/dev/null
+						echo -n ' |  |- Running assemble test......: '
+						apktool b -a "$(cygpath -wal /bin/aapt.exe)" -p GOATifw -o GOATool.apk GOATool &>assemble1.log;
+						if [ -f 'GOATool/build/apk/resources.arsc' ] && [ -d 'GOATool/build/apk/res' ] && [ -f 'GOATool.apk' ]; then
+							rm -rf 'GOATool/build'; rm -r 'GOATool.apk';
+							echo 'Success!';
+							if [ "$opt_e" != "-" ]; then for each in $opt_e; do exclude_lang="$exclude_lang"'\|'"$each"; done; fi
+							req_lang="$(sed -ne 's#^aapt: warning: string .*; found: \([[:alpha:][:space:]]\+\)#\1#pI' assemble1.log | sed -e 's/\([[:alpha:]]\{2\}\)_[[:alpha:]]\+/\1/gI' | awk '{ j=0; for(i=1;i<=NF;i++){ if( $i ~ /^[[:alpha:]]{2}$/ ){if(j==0)print " "; else printf " "; printf $i; j++} } }')";
+							if [ -n "req_lang" ]; then
+								#### DOH, Detect UnNeeded Languages ####
+								min_field="$(echo "$req_lang" |  awk '{if (NF<i || i==0)i=NF;} END{print i}')";
+								min_lang="$(echo "$req_lang" | sort -uf | awk '{ if (NF=='$min_field') for(i=1;i<=NF;i++) print $i}' | sort -uf | awk '{printf $0 " "}')"
+								req_lang="$(echo "$req_lang" | sed -e 's/.*\(en'"$exclude_lang"'\).*/\1/I' | sort -uf)"
+								i=0; for each in $min_lang; do if [ $i -eq 0 ]; then min_lang="$each"; else min_lang="$min_lang"'\|'"$each"; fi; i=1; done
+								req_lang="$(echo "$req_lang" | sed -e 's/.*\('"$min_lang"'\).*/\1/I' | sort -uf)"
+								min_lang="$(echo "$req_lang" | awk '{if($1 != "" )printf $1 " "}')"
+								i=0; for each in $min_lang; do if [ $i -eq 0 ]; then min_lang="$each"; else min_lang="$min_lang"'\|'"$each"; fi; i=1; done
+								req_lang="$(echo "$req_lang" | sed -e 's/.*\('"$min_lang"'\).*/\1/I' | sort -uf | awk '{if($1 != "" )printf $1 " "}')"
+							fi
+							
+							if [ "$req_lang" ]; then echo " |  |- Detected required languages: $req_lang"; fi
+							for each in $req_lang; do exclude_lang="$exclude_lang"'\|'"$each"; done
+								removable_lang="$(find GOATool/res/ -maxdepth 1 -mindepth 1 -type d -regextype sed -iregex 'GOATool/res/values-[[:alpha:]]\{2\}\(-[[:alpha:]]\+\)\?' -not -iregex 'GOATool/res/values-\(sw'$exclude_lang'\)\(-[[:alpha:]]\+\)\?' | sed -ne 's#.*/res/values-\([[:alpha:]]\{2\}\)\(-[[:alpha:]]\+\)\?#\1#Ip' | sort -uf)";
+							if [ -n "$removable_lang" ]; then
+								mkdir -p -m 777 GOATool/res-removed; e1=''; e2=''; e3=''; i=0;
+								for each in $removable_lang; do 
+									echo -ne "\r |  |- Removing unneeded languages: ${each}${e1}${e2}${e3}"; e2="$e1"; e1=" $each"; if [ $i -eq 0 ]; then e3=' []o:'; i=1; else e3='[°]o:'; i=0; fi;
+									
+									find 'GOATool/res/' -maxdepth 1 -mindepth 1 -type d -regextype sed -iregex 'GOATool/res/\(values\(-[[:alnum:]]\+\)\?\|raw\|xml\|drawable\)-'"${each}"'\(-[[:alnum:]-]\+\)\?' -exec mv -f '{}' 'GOATool/res-removed/' \;;
+									
+								done
+								echo -e '\r |  |- Removing unneeded languages: Success!     ';
+								echo -n ' |  +- Attempting to assemble APK : ';
+								apktool b -a "$(cygpath -wal /bin/aapt.exe)" -p GOATifw -o GOATool.apk GOATool &>assemble2.log;
+								if [ ! -f 'GOATool/build/apk/resources.arsc' ] || [ ! -d 'GOATool/build/apk/res' ] || [ ! -f 'GOATool.apk' ]; then
 								
-							done
-							echo -e '\r |  |- Removing unneeded languages: Success!     ';
-							echo -n ' |  +- Attempting to assemble APK.: ';
-							apktool b -a "$(cygpath -wal /bin/aapt.exe)" -p GOATif -o GOATool.apk GOATool &>assemble2.log;
-							if [ -f 'GOATool/build/apk/resources.arsc' ] && [ -d 'GOATool/build/apk/res' ] && [ -f 'GOATool.apk' ]; then
-								echo 'Success!';
-								cd 'GOATool/build/apk';
-								find 'res' -type f -not \( -iname '*.png' -or -iname '*.xml' \) > ../files_list
-								7za l "../../../GOTemp.apk" | sed -ne 's/.*[ \t]\+\([0-9]\+\)[ \t]\+\([0-9]\+\)[ \t]\+/\1|\2|/p' | awk -F '|' 'BEGIN{IGNORECASE = 1} { if ( $1 == $2 && $2 != 0 && $3 !~ /.*\.png$/ ) print $3 }' > ../store_list
-								7za d -y -ssc- -tzip -i'!res' "../../../GOTemp.apk" >/dev/null
-								7za a -y -ssc- -tzip -mpass=11 -mfb=32 -i'!resources.arsc' -ir'!*.*' -i@../files_list -x@../store_list -xr'!*.png' -x'!AndroidManifest.xml' -x'!lib' -x'!classes.dex' "../../../GOTemp.apk" >/dev/null
-								7za a -y -ssc- -tzip -mm=Copy -ir'!*.png' -i@../store_list "../../../GOTemp.apk" >/dev/null
-								cd '../../../';
-								GOCHECK="`7za l -tzip "GOTemp.apk" 2>/dev/null | sed -n 's/^[ \t]\+[0-9]\+[ \t]\+[0-9]\+[ \t]\+\([0-9]\+\)[ \t].*[ \t]\([0-9]\+\)[ \t].*/\1_\2/gp'`"
+									apktool_dummy="$(sed -ne 's#.* error: .* [[:alpha:]]\+/\(APKTOOL_DUMMY_[[:alpha:][:digit:]_]\+\) [[:alpha:]]\+.*#\1#Ip' assemble2.log 2>/dev/null)";
+									if [ -n "$apktool_dummy" ]; then
+										echo -e 'Failed!\r |  |';
+										echo ' |  |- Attempting to fix undetec. req. lang.';
+										apktool_dummy_fix='';
+										for each in $apktool_dummy; do
+											apktool_dummy_fix="${apktool_dummy_fix}\|\"${each}\"";
+										done
+										
+										find GOATool/res-removed/ -type f -iname '*.xml' -exec grep -sil "${apktool_dummy_fix#\\|}" '{}' \; | sed -ne 's#^GOATool/res-removed/\(.*\)/.*#\1#Ip' | sort -uf | xargs -I "{}" mv -f "GOATool/res-removed/{}" "GOATool/res/"
+										
+										echo -n ' |  +- Attempting to assemble APK : ';
+										apktool b -a "$(cygpath -wal /bin/aapt.exe)" -p GOATifw -o GOATool.apk GOATool &>assemble3.log;
+									fi
+								
+								fi
+								if [ -f 'GOATool/build/apk/resources.arsc' ] && [ -d 'GOATool/build/apk/res' ] && [ -f 'GOATool.apk' ]; then
+									echo 'Success!';
+									cd 'GOATool/build/apk';
+									find 'res' -type f -not \( -iname '*.png' -or -iname '*.xml' \) > ../files_list
+									7za l "../../../GOTemp.apk" | sed -ne 's/.*[ \t]\+\([0-9]\+\)[ \t]\+\([0-9]\+\)[ \t]\+/\1|\2|/p' | awk -F '|' 'BEGIN{IGNORECASE = 1} { if ( $1 == $2 && $2 != 0 && $3 !~ /.*\.png$/ ) print $3 }' > ../store_list
+									7za d -y -ssc- -tzip -i'!res' "../../../GOTemp.apk" >/dev/null
+									7za a -y -ssc- -tzip -mpass=11 -mfb=32 -i'!resources.arsc' -ir'!*.*' -i@../files_list -x@../store_list -xr'!*.png' -x'!AndroidManifest.xml' -x'!lib' -x'!classes.dex' "../../../GOTemp.apk" >/dev/null
+									7za a -y -ssc- -tzip -mm=Copy -ir'!*.png' -i@../store_list "../../../GOTemp.apk" >/dev/null
+									cd '../../../';
+									GOCHECK="`7za l -tzip "GOTemp.apk" 2>/dev/null | sed -n 's/^[ \t]\+[0-9]\+[ \t]\+[0-9]\+[ \t]\+\([0-9]\+\)[ \t].*[ \t]\([0-9]\+\)[ \t].*/\1_\2/gp'`"
+								else
+									echo -e 'Failed!\r[w] +';
+								fi
 							else
-								echo -e 'Failed!\r[w] +'
+								echo ' |  +- No removable lang. found...: Skipping!';
 							fi
 						else
-							echo ' |  +- No removable lang. found...: Skipping!'
+							echo -e 'Failed!\r[w] +';
 						fi
 					else
-						echo -e 'Failed!\r[w] +'
+						echo -e 'Failed!\r[w] +';
 					fi
+					if [ -n "$opt_E" ]; then read -sn1; fi
+					if [ -d "GOATool" ]; then rm -rf "GOATool"; fi
+					if [ -d "GOATifw" ]; then rm -rf "GOATifw"; fi
+					if [ -f "GOATool.apk" ]; then rm -rf "GOATool.apk"; fi
 				else
-					echo -e 'Failed!\r[w] +'
+					echo "[E] Cleaning resources FAILED: Java not properly configured"
 				fi
-				if [ -n "$opt_E" ]; then read -sn1; fi
-				if [ -d "GOATool" ]; then rm -rf "GOATool"; fi
-				if [ -d "GOATif" ]; then rm -rf "GOATif"; fi
-				if [ -d "GOATresb" ]; then rm -rf "GOATresb"; fi
-				if [ -f "GOATool.apk" ]; then rm -rf "GOATool.apk"; fi
 			else
-				echo "[E] Cleaning resources FAILED: Java not properly configured"
+				echo ''; echo ' |  +- No resources.arsc found....: Skipping!';
 			fi
 		fi
 		
