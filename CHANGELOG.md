@@ -1,13 +1,13 @@
 ChangeLog
 ===============================================================================
 
-Version 2.0.0.3.8-LX
+Version 2.0.0.3.10-LX
 --------------------
 
- * Added Updated apktool v2.0.0b1-v2.0.0b6.
+ * Added Updated apktool v2.0.0b1-v2.0.0b7.
  * Added Updated apktool v1.5.3-inverted (TRDS 2.0).
- * Added Updated baksmali v2.0b1-v2.0b6.
- * Added Updated smali v2.0b1-v2.0b6.
+ * Added Updated baksmali v2.0, v2.0b1-v2.0b6.
+ * Added Updated smali v2.0, v2.0b1-v2.0b6.
  * Added Updated aapt-inverted (TRDS 2.0).
  * Added Updated Script
  * Added Updated pngcrush v1.7.67 32/64bit.
@@ -28,7 +28,7 @@ Version 2.0.0.3.8-LX
  * Added AndroidImageScaler v1.0.0.
  * Added HxD Hex Editor v1.7.7.0.
  * Added JD-GUI v0.3.5.
- * Added MiniGOptimize v1.27b6.
+ * Added MiniGOptimize v1.27b9.
  
  * Added Updated modif. Script & Facelift
  * Added Update.cmd for 2 Menu Options

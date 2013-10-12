@@ -1,10 +1,10 @@
- AIO-Script		v2.0.0.3.9
+ AIO-Script		v2.0.0.3.10
 
  apktool         	v1.3.2 - v1.5.2 + v1.5.3 SNAPSHOT
  apktool		v1.5.3 inverted (TRDS 2.0)
- apktool         	v2.0.0b1 - 2.0.0b6
+ apktool         	v2.0.0b1 - 2.0.0b7
 
- baksmali/smali		v1.4.2, v2.0b1 - v2.0b6
+ baksmali/smali		v1.4.2, v2.0, v2.0b1 - v2.0b6
  smali (script)		512m
 
  adb			v1.0.31
