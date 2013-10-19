@@ -55,7 +55,7 @@ if not exist %~dp0pulled\ mkdir %~dp0pulled
 if not exist %~dp0dot9\ mkdir %~dp0dot9
 cls
 echo.
-echo                          AIO Android Tool v2.0.0.3.10
+echo                          AIO Android Tool v2.0.0.3.11
 echo.
 echo.
 echo                    ........                       ........                     

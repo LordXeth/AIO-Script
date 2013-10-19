@@ -1,4 +1,4 @@
- AIO-Script		v2.0.0.3.10
+ AIO-Script		v2.0.0.3.11
 
  apktool         	v1.3.2 - v1.5.2 + v1.5.3 SNAPSHOT
  apktool		v1.5.3 inverted (TRDS 2.0)
