@@ -1,6 +1,9 @@
 #!/bin/bash
 #### GOptimize by gu5t3r@XDA ####
-GOVersion=1.27.09
+GOVersion=1.27.12
+
+# Exclamation mark (!) workaround
+set +H &>/dev/null; set +o histexpand &>/dev/null;
 
 #### CHECK FOR BINARIES ####
 if [ ! -f /bin/.GOptimize ]; then
@@ -63,7 +66,7 @@ cat << EOF
       TruePNG, PngOut, PNGZopfli and DeflOpt.                 #
                                                               #
   Compression Levels:                                         #
-      Script always uses 11 passes for compression which      #
+      Script always uses 10 passes for compression which      #
       guarantees maximum compression and does not impact      #
       decompression time. Script CL differ in fast bytes.     #
           CL(1) <=>   4 fb        CL(4) <=>  32 fb            #
@@ -156,7 +159,7 @@ COptions()
 	if [ -z "$1" ] || [ "${1#fb}" -eq 0 ]; then
 		echo 'a -tzip -mm=Copy -w.. -ssc- -y';
 	else
-		echo 'a -tzip -mm=Deflate -mx=9 -mfb='"$(CLevel $1)"' -mpass=11 -w.. -ssc- -y';
+		echo 'a -tzip -mm=Deflate -mx=9 -mfb='"$(CLevel $1)"' -mpass=10 -w.. -ssc- -y';
 	fi
 }
 
@@ -171,7 +174,7 @@ CCheck()
 
 #### GET OPTIONS ####
 unset -v opt_h opt_p opt_m opt_z opt_a opt_r opt_l opt_d opt_k opt_b opt_s opt_t opt_j opt_R opt_e opt_E SMALI;
-while getopts “h:pm:a:r:l:d:b:k:z:s:tj:R:e:E” OPTION 2>/dev/null
+while getopts “h:pm:a:r:l:d:b:k:z:s:tj:R:e:E:” OPTION 2>/dev/null
 do
 	case $OPTION in
 		h)
@@ -265,7 +268,8 @@ do
 			fi
 			;;
 		E)
-			opt_E=1;
+			opt_E="$OPTARG";
+			if [[ ! "$opt_E" =~ [a-z0-9]+ ]]; then usage; exit 1; fi
 			;;
 		?)
 			usage; exit 1;
@@ -322,7 +326,6 @@ GOptimize()
 		if [ -d ".go[${APK%.*}]" ]; then rm -rf ".go[${APK%.*}]" 2>/dev/null; fi
 		mkdir -m 777 -p ".go[${APK%.*}]/GOApk";
 		cd ".go[${APK%.*}]"
-		GOTemp_zip='GOTemp.apk';
 		cp -f "../$APK" "GOTemp.apk";
 		if [ $? -ne 0 ]; then echo -e '\n[E] File operation errors!!!'; exit 1; fi
 		
@@ -336,20 +339,20 @@ GOptimize()
 				if java -version &>/dev/null && [ "$(java -version 2>&1) | grep 'java version')" ]; then
 					echo '';
 					if [ -d "../framework" ]; then
-						echo ' |  +- Setting up frameworks...'
+						echo ' |  |- Setting up frameworks...'
 						find "../framework/" -maxdepth 1 -mindepth 1 -type f -iname '*.apk' -exec apktool if -p GOATifw "{}" \; &>/dev/null;
-						echo -n ' |  |- ';
-					else
-						echo -n ' |  +- ';
 					fi
-					echo -n 'Running disassemble test...: '
-					if apktool d -a "$(cygpath -wal /bin/aapt.exe)" -s -p GOATifw -o GOATool GOTemp.apk &>disassemble.log; then
-						echo 'Success!';
+					echo -n ' |  |- Running disassemble test...: '
+					if apktool d -s -p GOATifw -o GOATool GOTemp.apk &>disassemble.log; then
+						echo -n 'Success!'; sleep 2; echo -ne '\b\b\b\b\b\b\b\b        \r';
 						echo -n ' |  |- Running assemble test......: '
-						apktool b -a "$(cygpath -wal /bin/aapt.exe)" -p GOATifw -o GOATool.apk GOATool &>assemble1.log;
-						if [ -f 'GOATool/build/apk/resources.arsc' ] && [ -d 'GOATool/build/apk/res' ] && [ -f 'GOATool.apk' ]; then
+						#### HACK FOR UNKNOWNFILES UNTIL APKTOOL FIXED ####
+						if [ -f 'GOATool/apktool.yml' ]; then sed -igo -e '/^unknownFiles:$/,/^$\|^[[:alnum:]].*/{/^unknownFiles:$\|^  .*$/d;}' 'GOATool/apktool.yml'; fi
+						###################################################
+						apktool b -c -p GOATifw -o GOATool.apk GOATool &>assemble1.log;
+						if [ -f 'GOATool/build/apk/resources.arsc' ] && [ -f 'GOATool.apk' ]; then
 							rm -rf 'GOATool/build'; rm -r 'GOATool.apk';
-							echo 'Success!';
+							echo -n 'Success!';
 							if [ "$opt_e" != "-" ]; then for each in $opt_e; do exclude_lang="$exclude_lang"'\|'"$each"; done; fi
 							req_lang="$(sed -ne 's#^aapt: warning: string .*; found: \([[:alpha:][:space:]]\+\)#\1#pI' assemble1.log | sed -e 's/\([[:alpha:]]\{2\}\)_[[:alpha:]]\+/\1/gI' | awk '{ j=0; for(i=1;i<=NF;i++){ if( $i ~ /^[[:alpha:]]{2}$/ ){if(j==0)print " "; else printf " "; printf $i; j++} } }')";
 							if [ -n "req_lang" ]; then
@@ -363,7 +366,7 @@ GOptimize()
 								i=0; for each in $min_lang; do if [ $i -eq 0 ]; then min_lang="$each"; else min_lang="$min_lang"'\|'"$each"; fi; i=1; done
 								req_lang="$(echo "$req_lang" | sed -e 's/.*\('"$min_lang"'\).*/\1/I' | sort -uf | awk '{if($1 != "" )printf $1 " "}')"
 							fi
-							
+							sleep 2; echo -ne '\b\b\b\b\b\b\b\b        \r';
 							if [ "$req_lang" ]; then echo " |  |- Detected required languages: $req_lang"; fi
 							for each in $req_lang; do exclude_lang="$exclude_lang"'\|'"$each"; done
 								removable_lang="$(find GOATool/res/ -maxdepth 1 -mindepth 1 -type d -regextype sed -iregex 'GOATool/res/values-[[:alpha:]]\{2\}\(-[[:alpha:]]\+\)\?' -not -iregex 'GOATool/res/values-\(sw'$exclude_lang'\)\(-[[:alpha:]]\+\)\?' | sed -ne 's#.*/res/values-\([[:alpha:]]\{2\}\)\(-[[:alpha:]]\+\)\?#\1#Ip' | sort -uf)";
@@ -377,12 +380,12 @@ GOptimize()
 								done
 								echo -e '\r |  |- Removing unneeded languages: Success!     ';
 								echo -n ' |  +- Attempting to assemble APK : ';
-								apktool b -a "$(cygpath -wal /bin/aapt.exe)" -p GOATifw -o GOATool.apk GOATool &>assemble2.log;
-								if [ ! -f 'GOATool/build/apk/resources.arsc' ] || [ ! -d 'GOATool/build/apk/res' ] || [ ! -f 'GOATool.apk' ]; then
+								apktool b -c -p GOATifw -o GOATool.apk GOATool &>assemble2.log;
+								if [ ! -f 'GOATool/build/apk/resources.arsc' ] || [ ! -f 'GOATool.apk' ]; then
 								
 									apktool_dummy="$(sed -ne 's#.* error: .* [[:alpha:]]\+/\(APKTOOL_DUMMY_[[:alpha:][:digit:]_]\+\) [[:alpha:]]\+.*#\1#Ip' assemble2.log 2>/dev/null)";
 									if [ -n "$apktool_dummy" ]; then
-										echo -e 'Failed!\r |  |';
+										echo -en 'Failed!'; sleep 2; echo -ne '\b\b\b\b\b\b\b\b        \r';
 										echo ' |  |- Attempting to fix undetec. req. lang.';
 										apktool_dummy_fix='';
 										for each in $apktool_dummy; do
@@ -392,25 +395,44 @@ GOptimize()
 										find GOATool/res-removed/ -type f -iname '*.xml' -exec grep -sil "${apktool_dummy_fix#\\|}" '{}' \; | sed -ne 's#^GOATool/res-removed/\(.*\)/.*#\1#Ip' | sort -uf | xargs -I "{}" mv -f "GOATool/res-removed/{}" "GOATool/res/"
 										
 										echo -n ' |  +- Attempting to assemble APK : ';
-										apktool b -a "$(cygpath -wal /bin/aapt.exe)" -p GOATifw -o GOATool.apk GOATool &>assemble3.log;
+										apktool b -c -p GOATifw -o GOATool.apk GOATool &>assemble3.log;
 									fi
 								
 								fi
-								if [ -f 'GOATool/build/apk/resources.arsc' ] && [ -d 'GOATool/build/apk/res' ] && [ -f 'GOATool.apk' ]; then
+								if [ -f 'GOATool/build/apk/resources.arsc' ] && [ -f 'GOATool.apk' ]; then
 									echo 'Success!';
 									cd 'GOATool/build/apk';
-									find 'res' -type f -not \( -iname '*.png' -or -iname '*.xml' \) > ../files_list
-									7za l "../../../GOTemp.apk" | sed -ne 's/.*[ \t]\+\([0-9]\+\)[ \t]\+\([0-9]\+\)[ \t]\+/\1|\2|/p' | awk -F '|' 'BEGIN{IGNORECASE = 1} { if ( $1 == $2 && $2 != 0 && $3 !~ /.*\.png$/ ) print $3 }' > ../store_list
-									7za d -y -ssc- -tzip -i'!res' "../../../GOTemp.apk" >/dev/null
-									7za a -y -ssc- -tzip -mpass=11 -mfb=32 -i'!resources.arsc' -ir'!*.*' -i@../files_list -x@../store_list -xr'!*.png' -x'!AndroidManifest.xml' -x'!lib' -x'!classes.dex' "../../../GOTemp.apk" >/dev/null
-									7za a -y -ssc- -tzip -mm=Copy -ir'!*.png' -i@../store_list "../../../GOTemp.apk" >/dev/null
+									
+									if [ -z "$opt_E" ] || [[ ! "$opt_E" =~ a ]]; then
+										if [ -d 'res' ]; then
+											find '../../res-removed' -maxdepth 1 -mindepth 1 -type d | sed -ne 's@^\.\./\.\./res-removed/@res/@Ip' | sed -e '/^res\/values-/Id;s/^\(res\/[[:alpha:]]\+-[[:alpha:]]\{2\}-\)r\([[:alpha:]]\{2\}.*\)/\1\2/I'> ../rmove_list
+											if [ -s ../rmove_list ]; then
+												7za d -y -ssc- -tzip -i@../rmove_list "../../../GOTemp.apk" >/dev/null
+											fi
+										fi
+										if [ -n "$(7za l -ssc- -i'!resources.arsc' "../../../GOTemp.apk" | sed -ne 's/.*[ \t]\+\([0-9]\+\)[ \t]\+\([0-9]\+\)[ \t]\+/\1|\2|/p' | awk -F '|' 'BEGIN{IGNORECASE = 1} { if ( $1 == $2 && $2 != 0 ) print $3 }')" ]; then
+											7za $(COptions) -i'!resources.arsc' "../../../GOTemp.apk" >/dev/null
+										else
+											7za $(COptions fb8) -i'!resources.arsc' "../../../GOTemp.apk" >/dev/null
+										fi
+									else
+										if [ -d 'res' ]; then
+											find 'res' -type f -not \( -iname '*.png' -or -iname '*.xml' \) >../files_list
+											7za d -y -ssc- -tzip -i'!res' "../../../GOTemp.apk" >/dev/null
+										else
+											echo -n '' >../files_list
+										fi
+										7za l "../../../GOTemp.apk" | sed -ne 's/.*[ \t]\+\([0-9]\+\)[ \t]\+\([0-9]\+\)[ \t]\+/\1|\2|/p' | awk -F '|' 'BEGIN{IGNORECASE = 1} { if ( $1 == $2 && $2 != 0 && $3 !~ /.*\.png$/ ) print $3 }' > ../store_list
+										7za $(COptions fb8) -i'!resources.arsc' -ir'!*.*' -i@../files_list -x@../store_list -xr'!*.png' -x'!AndroidManifest.xml' -x'!META-INF' -x'!lib' -x'!classes.dex' "../../../GOTemp.apk" >/dev/null
+										7za $(COptions) -ir'!*.png' -i@../store_list -x'!AndroidManifest.xml' -x'!META-INF' "../../../GOTemp.apk" >/dev/null
+									fi
 									cd '../../../';
 									GOCHECK="`7za l -tzip "GOTemp.apk" 2>/dev/null | sed -n 's/^[ \t]\+[0-9]\+[ \t]\+[0-9]\+[ \t]\+\([0-9]\+\)[ \t].*[ \t]\([0-9]\+\)[ \t].*/\1_\2/gp'`"
 								else
 									echo -e 'Failed!\r[w] +';
 								fi
 							else
-								echo ' |  +- No removable lang. found...: Skipping!';
+								echo -e '\r |  +- No removable lang. found...: Skipping!';
 							fi
 						else
 							echo -e 'Failed!\r[w] +';
@@ -418,7 +440,7 @@ GOptimize()
 					else
 						echo -e 'Failed!\r[w] +';
 					fi
-					if [ -n "$opt_E" ]; then read -sn1; fi
+					if [[ "$opt_E" =~ p ]]; then read -sn1; fi
 					if [ -d "GOATool" ]; then rm -rf "GOATool"; fi
 					if [ -d "GOATifw" ]; then rm -rf "GOATifw"; fi
 					if [ -f "GOATool.apk" ]; then rm -rf "GOATool.apk"; fi
@@ -440,11 +462,11 @@ GOptimize()
 			if [ "$opt_r" ]; then
 				7za x -ssc- -y -xr\!META-INF -xr\!AndroidManifest.xml "../GOTemp.apk" > /dev/null
 			else
-				if [ "$opt_p" ]; then 7za x -ssc- -y -ir\!*.png -xr\!*.9.png "../GOTemp.apk" > /dev/null; fi
-				if [ "$opt_a" ]; then 7za x -ssc- -y -i\!resources.arsc "../GOTemp.apk" > /dev/null; fi
-				if [ "$opt_d" ]; then 7za x -ssc- -y -i\!classes.dex "../GOTemp.apk" > /dev/null; fi
-				if [ "$opt_l" ]; then 7za x -ssc- -y -i\!lib "../GOTemp.apk" > /dev/null; fi
-				if [ "$opt_j" ]; then 7za x -ssc- -y -ir\!*.jpg -ir\!*.jpeg -ir\!*.jpe -ir\!*.jfif "../GOTemp.apk" > /dev/null; fi
+				if [ "$opt_p" ]; then 7za x -ssc- -y -ir'!*.png' -xr'!*.9.png' "../GOTemp.apk" > /dev/null; fi
+				if [ "$opt_a" ]; then 7za x -ssc- -y -i'!resources.arsc' "../GOTemp.apk" > /dev/null; fi
+				if [ "$opt_d" ]; then 7za x -ssc- -y -i'!classes.dex' "../GOTemp.apk" > /dev/null; fi
+				if [ "$opt_l" ]; then 7za x -ssc- -y -i'!lib' "../GOTemp.apk" > /dev/null; fi
+				if [ "$opt_j" ]; then 7za x -ssc- -y -ir'!*.jpg' -ir'!*.jpeg' -ir'!*.jpe' -ir'!*.jfif' "../GOTemp.apk" > /dev/null; fi
 			fi
 			chmod -R 777 '.'
 			Apk_Was_Extracted='1';
@@ -506,7 +528,7 @@ GOptimize()
 				let size_before+=0; if [ "$size_before" -eq 0 ]; then size_before=1; size_after=1; fi
 				echo -e "\r |- Optimized PNG's: 100% | Saved: $((($size_before-$size_after)/1024)) kB ($((($size_before-$size_after)*100/$size_before))%)"
 				#echo " |- Packing PNG's in APK..."
-				7za $(COptions) -ir\!*.png -xr\!*.9.png "../GOTemp.apk" > /dev/null
+				7za $(COptions) -ir'!*.png' -xr'!*.9.png' "../GOTemp.apk" > /dev/null
 			fi
 			unset PNGLIST PNG size_before size_after;
 		fi
@@ -537,7 +559,7 @@ GOptimize()
 				let size_before+=0; if [ "$size_before" -eq 0 ]; then size_before=1; size_after=1; fi
 				echo -e "\r |- Optimized JPG's: 100% | Saved: $((($size_before-$size_after)/1024)) kB ($((($size_before-$size_after)*100/$size_before))%)"
 				#echo " |- Packing JPG's in APK..."
-				7za $(COptions) -ir\!*.jpg -ir\!*.jpeg -ir\!*.jpe -ir\!*.jfif "../GOTemp.apk" > /dev/null
+				7za $(COptions) -ir'!*.jpg' -ir'!*.jpeg' -ir'!*.jpe' -ir'!*.jfif' "../GOTemp.apk" > /dev/null
 			fi
 			unset JPGLIST JPG size_before size_after;
 		fi
@@ -571,9 +593,9 @@ GOptimize()
 						for SMALI in $SMALI_LIST; do
 							if [ -d "../smali" ]; then rm -rf ../smali; fi
 							if [ $i -eq 0 ]; then
-								echo -n " |- Removing debug info using smali v$($SMALI --version | awk '{ if (NR == 1) print $2}'): "
+								echo -n " |- Removing debug info using smali$($SMALI --version | sed -ne 's@^\(bak\)\?smali \([0-9a-f\.\-]\+\)\(-dirty\)\? .*$@ v\2@Ip'): "
 							else
-								echo -n " |  +- Trying to remove using smali v$($SMALI --version | awk '{ if (NR == 1) print $2}'): "
+								echo -n " |  +- Trying to remove using smali$($SMALI --version | sed -ne 's@^\(bak\)\?smali \([0-9a-f\.\-]\+\)\(-dirty\)\? .*$@ v\2@Ip'): "
 							fi
 							if [ -f /bin/bak$SMALI ] && [ -f /bin/$SMALI ] &&  [ -f /bin/bak${SMALI}.jar ] && [ -f /bin/${SMALI}.jar ] \
 							  && [ ! "$(bak$SMALI -x -b -a${opt_b} -o ../smali classes.dex 2>&1)" ] && [ ! "$($SMALI -a${opt_b} -o ../GOclass.dex ../smali 2>&1)" ]; then
@@ -620,7 +642,7 @@ GOptimize()
 				else
 					echo " |- Recompressing libraries with CL($opt_l)";
 				fi
-				7za $(COptions $opt_l) -i\!lib/*/*.* "../GOTemp.apk" > /dev/null
+				7za $(COptions $opt_l) -i'!lib/*/*.*' "../GOTemp.apk" > /dev/null
 			else
 				echo " |- NO libraries in APK detected"
 			fi
@@ -649,8 +671,8 @@ GOptimize()
 			find '.' -type f -not -iname '*.*' | sed -n 's#^\./##p' > ../noex_list
 			if [ -s '../noex_list' ]; then noex_list='-i@../noex_list'; else noex_list=''; fi
 			
-			nice -n19 7za $(COptions $opt_r) -ir\!*.* ${noex_list} ${resources_arsc} ${classes_dex} ${libraries} ${store_list} -xr\!*.png -xr\!*.jpg -xr\!*.jpeg -xr\!*.jpe -xr\!*.jfif ${x_copy_list} "../GOTemp.apk" > /dev/null
-			7za $(COptions) ${i_copy_list} ${png_files} ${jpg_files} "../GOTemp.apk" > /dev/null
+			nice -n19 7za $(COptions $opt_r) -ir'!*.*' ${noex_list} ${resources_arsc} ${classes_dex} ${libraries} ${store_list} -xr'!*.png' -xr'!*.jpg' -xr'!*.jpeg' -xr'!*.jpe' -xr'!*.jfif' ${x_copy_list} "../GOTemp.apk" > /dev/null
+			nice -n19 7za $(COptions) ${i_copy_list} ${png_files} ${jpg_files} "../GOTemp.apk" > /dev/null
 			unset -v i_copy_list x_copy_list r_copy_list store_list
 		fi
 
