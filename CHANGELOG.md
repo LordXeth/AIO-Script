@@ -1,7 +1,7 @@
 ChangeLog
 ===============================================================================
 
-Version 2.0.0.3.10-LX
+Version 2.0.0.3.11-LX
 --------------------
 
  * Added Updated apktool v2.0.0b1-v2.0.0b7.
@@ -28,7 +28,7 @@ Version 2.0.0.3.10-LX
  * Added AndroidImageScaler v1.0.0.
  * Added HxD Hex Editor v1.7.7.0.
  * Added JD-GUI v0.3.5.
- * Added MiniGOptimize v1.27b9.
+ * Added MiniGOptimize v1.27b12.
  
  * Added Updated modif. Script & Facelift
  * Added Update.cmd for 2 Menu Options
