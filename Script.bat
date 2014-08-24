@@ -55,7 +55,7 @@ if not exist %~dp0pulled\ mkdir %~dp0pulled
 if not exist %~dp0dot9\ mkdir %~dp0dot9
 cls
 echo.
-echo                          AIO Android Tool v2.0.0.3.11
+echo                          AIO Android Tool v2.0.0.3.14
 echo.
 echo.
 echo                    ........                       ........                     
@@ -4089,11 +4089,14 @@ echo  --------------------------------------------------------------------------
 echo  #					#				     #
 echo  #	1    1.3.2	7    1.5.0	#		   12    2.0.0-b1    #
 echo  #	2    1.4.0	8    1.5.1	#    		   13    2.0.0-b2    #
-echo  #	3    1.4.1	9    1.5.2	#    Apktool  	   14    2.0.0-b3    #
-echo  #	4    1.4.2	10   1.5.3	#         	   15    2.0.0-b4    #
-echo  #	5    1.4.3	11   1.5.3-inv	#      2.0	   16    2.0.0-b5    #
-echo  #	6    1.4.9			#		   17    2.0.0-b6    #
+echo  #	3    1.4.1	9    1.5.2	#     	 	   14    2.0.0-b3    #
+echo  #	4    1.4.2	10   1.5.3	#    Apktool   	   15    2.0.0-b4    #
+echo  #	5    1.4.3	11   1.5.3-inv	#    		   16    2.0.0-b5    #
+echo  #	6    1.4.9			#      2.0	   17    2.0.0-b6    #
 echo  #					#		   18    2.0.0-b7    #
+echo  #					#		   19    2.0.0-b8    #
+echo  #					#		   20    2.0.0-b9    #
+echo  #					#		   21    2.0.0-rc1   #
 echo  #					#				     #
 if %firstrun% EQU on goto firstrunskip
 echo  ------------------------------------------------------------------------------
@@ -4122,6 +4125,9 @@ if %input%==15 goto version15
 if %input%==16 goto version16
 if %input%==17 goto version17
 if %input%==18 goto version18
+if %input%==19 goto version19
+if %input%==20 goto version20
+if %input%==21 goto version21
 if %firstrun% EQU on goto firstrunmenuskip
 if %input%==99 goto restart
 :firstrunmenuskip
@@ -4215,7 +4221,22 @@ goto restart
 set apktool=apktool-2.0.0b7.jar
 echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
 if %firstrun% EQU on goto setupdates
-goto restart																				::OPEN LOG
+goto restart										
+:version19
+set apktool=apktool-2.0.0b8.jar
+echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
+if %firstrun% EQU on goto setupdates
+goto restart
+:version20
+set apktool=apktool-2.0.0b9.jar
+echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
+if %firstrun% EQU on goto setupdates
+goto restart
+:version21
+set apktool=apktool-2.0.0rc1.jar
+echo %apktool% > %~dp0tools\Settings\apktool_settings.txt
+if %firstrun% EQU on goto setupdates
+goto restart										::OPEN LOG
 :log
 cls
 set input=error

@@ -1,39 +1,39 @@
- AIO-Script		v2.0.0.3.11
+ AIO-Script		v2.0.0.3.14
 
  apktool         	v1.3.2 - v1.5.2 + v1.5.3 SNAPSHOT
  apktool		v1.5.3 inverted (TRDS 2.0)
- apktool         	v2.0.0b1 - 2.0.0b7
+ apktool         	v2.0.0b1 - 2.0.0b9, v2.0.0rc1
 
- baksmali/smali		v1.4.2, v2.0, v2.0b1 - v2.0b6
+ baksmali/smali		v1.4.2, v2.0, v2.0b1 - v2.0b6, 2.0.2 - 2.0.3
  smali (script)		512m
 
  adb			v1.0.31
  appt			v0.2 + inverted (TRDS 2.0)
 
  7za			v9.22
- advpng			v1.17
- optipng		v0.7.4 HG (libpng v1.4.5)
- pngcrush		v1.7.67 32/64bit
+ advpng			v1.19
+ optipng		v0.7.5  (libpng v1.6.10 & zlib v1.2.8)
+ pngcrush		v1.7.77 32/64bit
  roptipng		v0.6.3
- wget			v1.14
+ wget			vGit090313
  zlib.dll		v1.2.8
 
- Notepad++		v6.5 de/en/fr/pl/ru
+ Notepad++		v6.6.8 de/en/fr/pl/ru
  PRGrep			v8.12
  ColorEdit		v1.1
- ColorMania		v4.0		
+ ColorMania		v5.0		
  Md5Checker		v3.3.0.12
 
  colorchange		v0.1.0.0
  xUltimate		v1.0.0.0
 
  droid@Screen		v1.0.1
- better9patch		v4.9 r19
+ better9patch		v4.10 r20
  ADB File Explorer	v0.3.1
  Android Image Scaler	v1.0.0
- JD-GUI			v0.3.5
+ JD-GUI			v0.3.7 RC1
  HxD Hex Editor		v1.7.7.0
  ColorEdit		v1.0 beta
  VisualColorPicker	v2.6
- MiniCygwin GOptimize	v1.27b12
+ MiniCygwin GOptimize	v1.42
  

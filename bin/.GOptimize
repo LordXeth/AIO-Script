@@ -2,11 +2,5 @@ source /bin/.ManualGO
 echo -e "##########[ MiniCygwin GOptimize v${GOVersion} ]###########"
 echo -e "\n[i] Put APK's in \"PlaceApksHere\"";
 echo -e "    and press any key to start...\n"; read -sn1;
-
-
-################################################################################
-goptimize -m4 -j0 -a0 -d5 -l5 *.apk;  # CHANGE THIS LINE FOR DEFAULT BEHAVIOUR #
-################################################################################
-
-
+source /bin/.DefaultGO
 echo -e "\n\n[i] Press any key to exit..."; read -sn1; exit 0;

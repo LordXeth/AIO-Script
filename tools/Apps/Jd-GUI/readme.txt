@@ -1,6 +1,6 @@
 This is README file for Java Decompiler.
-JD home page: http://java.decompiler.free.fr
-Copyright 2008-2012 Emmanuel Dupuy.
+JD home page: http://jd.benow.ca
+Copyright 2008-2014 Emmanuel Dupuy.
 
 1. Installation.
 No installation and no setup are required.
@@ -22,7 +22,7 @@ For example, to decompile "Object.class", you can :
 - drag and drop "Object.class" onto "jd-gui".
 
 4. Changes
-http://java.decompiler.free.fr/jd-gui/changes/
+http://jd.benow.ca
 
 5. Uninstallation
  5.1 Windows: Delete "jd-gui.exe" and "jd-gui.cfg".
@@ -30,16 +30,18 @@ http://java.decompiler.free.fr/jd-gui/changes/
  5.3 OSX: Drag and drop "JD-GUI" application to the trash.
 
 6. Network & Security
-JD-GUI includes a feature to inform you of the availability of new versions. 
-It executes the HTTP GET request "http://java.decompiler.free.fr/jd-gui/
-update/" without any parameters neither cookies to download update data. No 
-personal information is transmitted. You can check network activities of 
-JD-GUI with "tcpdump" for example ... If you decide to block network acces of 
-JD-GUI, all its features remains operational, except the auto-update checking 
-feature, of course.
+JD-GUI is a single instance application. When a second instance is started, 
+its parameters are sent to the first instance and it stops. This allows, to 
+the first instance, to show the sources of the ".class" file that you double-
+clicked.
+
+To do this, the first instance creates a socket server, listening on 
+127.0.0.1:12008 and the next instances created a socket to the same endpoint. 
+Inter-process communications are local to the host. No data is sent or 
+received from the Internet.
 
 7. Disclaimer
-Copyright 2008-2012 Emmanuel Dupuy.
+Copyright 2008-2014 Emmanuel Dupuy.
 
 THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
 INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND 

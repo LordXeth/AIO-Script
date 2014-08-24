@@ -1,2 +1,2 @@
 #!/bin/bash
-java -jar "$(cygpath -wal '/bin/apktool.jar')" "$@"
+java -jar -Duser.language=en "$(cygpath -wal '/bin/apktool.jar')" "$@"

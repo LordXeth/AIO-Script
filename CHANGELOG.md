@@ -1,6 +1,30 @@
 ChangeLog
 ===============================================================================
 
+Version 2.0.0.3.14-LX
+--------------------
+
+ * Added Updated apktool v2.0.0b1 - 2.0.0b9, v2.0.0rc1
+ * Added Updated baksmali v1.4.2, v2.0, v2.0b1 - v2.0b6, 2.0.2 - 2.0.3
+ * Added Updated smali v1.4.2, v2.0, v2.0b1 - v2.0b6, 2.0.2 - 2.0.3
+ * Added Updated Script
+ * Added Updated pngcrush v1.7.77 32/64bit.
+ * Added Updated wget vGit090313 
+ * Added Updated notepad++ v6.6.8 de/en/fr/pl/ru.
+ * Added Updated advpng v1.19.
+ * Added Updated optipng v0.7.5  (libpng v1.6.10 & zlib v1.2.8)
+ * Added Updated ColorMania v5.0. 
+ 
+ * Added MiniCygwin GOptimize v1.42.
+ * Added JD-GUI v0.3.7 RC1.
+ 
+ * Added Updated modif. Script & Facelift
+ * Added Update.cmd for 2 Menu Options
+ * Added Other Options Menu (98)
+ * Added GOptimize Menu (98-9)
+ * and little more
+
+
 Version 2.0.0.3.11-LX
 --------------------
 
@@ -19,12 +43,10 @@ Version 2.0.0.3.11-LX
  * Added Updated 7za v9.22.
  * Added Updated advpng v1.17.
  * Added Updated optipng v0.7.4 HG.
- * Added Updated pngcrush v1.7.65 32/64bit.
  * Added Updated ColorMania v4.0. 
  
  * Added ColorEdit v1.0 beta.
  * Added VisualColorPicker v2.6.
- * Added MiniCygwin GOptimize v1.24.
  * Added AndroidImageScaler v1.0.0.
  * Added HxD Hex Editor v1.7.7.0.
  * Added JD-GUI v0.3.5.
